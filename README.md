@@ -26,3 +26,17 @@ Options:
 * Get notified only if first matching edit by a given contributor
 * Real-time / Scheduled
 * Generated RSS feed
+
+
+Implementation
+--------------
+
+In order to provide the "tag is removed from a NWR" feature, it builds on the augmented diffs from overpass: http://overpass-api.de/augmented_diffs/
+
+The OSC files are fetched, and processed:
+* The geometry of ways is reconstructed
+* The really deleted objects are identified and segregated
+* For modified objects, a previous/new version is created
+* Aggregated modifications are sent to the matchers
+
+This backend is in Java, and is API only. A frontend TBD exists to set up the alerts
