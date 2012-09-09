@@ -1,0 +1,8 @@
+# Regular build stuff
+lib/
+build/
+ivy/
+# Eclipse stuff
+bin/
+.classpath
+.project
