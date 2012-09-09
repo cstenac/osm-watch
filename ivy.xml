@@ -1,0 +1,9 @@
+<ivy-module version="2.0">
+    <info organisation="fr.openstreetmap" module="osm-watch"/>
+    <dependencies>
+        <dependency org="commons-lang" name="commons-lang" rev="2.0"/>
+        <dependency org="commons-io" name="commons-io" rev="2.0"/>
+        <dependency org="com.google.guava" name="guava" rev="r09"/>
+    </dependencies>
+</ivy-module>
+
