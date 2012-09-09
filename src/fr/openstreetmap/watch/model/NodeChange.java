@@ -1,11 +1,12 @@
+package fr.openstreetmap.watch.model;
 import java.util.Map;
 import java.util.Set;
 
 import com.google.common.base.Preconditions;
 
 
-public class WayChange {
-    public WayChange( WayDescriptor before, WayDescriptor after) {
+public class NodeChange {
+    public NodeChange( NodeDescriptor before, NodeDescriptor after) {
         Preconditions.checkArgument(before.id == after.id);
         assert(after.changeset > before.changeset);
         assert(after.version > before.version);
@@ -20,8 +21,8 @@ public class WayChange {
     
     public long changeset;
     
-    public WayDescriptor before;
-    public WayDescriptor after;
+    public NodeDescriptor before;
+    public NodeDescriptor after;
     
     /* Get the distance in kilometers by which this node moved */
     public double getDisplacement() {

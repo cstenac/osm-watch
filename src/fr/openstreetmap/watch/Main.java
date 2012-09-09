@@ -1,3 +1,4 @@
+package fr.openstreetmap.watch;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.InputStream;
@@ -8,12 +9,16 @@ import java.util.List;
 
 import org.apache.commons.io.FileUtils;
 
+import fr.openstreetmap.watch.model.ChangesetDescriptor;
+import fr.openstreetmap.watch.model.NodeChange;
+import fr.openstreetmap.watch.model.NodeDescriptor;
+
 
 public class Main {
     public static void main(String[] args) throws Exception {
         String s = FileUtils.readFileToString(new File("/tmp/000.osc"), "utf8");
         s = s.replace("&", "&amp;");
-        OSCFileParser opf = new OSCFileParser();
+        AugmentedDiffParser opf = new AugmentedDiffParser();
         opf.parse(s);
         
         /*

@@ -1,8 +1,6 @@
-import java.io.IOException;
-import java.io.InputStream;
+package fr.openstreetmap.watch;
 import java.io.StringReader;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 import javax.xml.parsers.DocumentBuilder;
@@ -14,12 +12,17 @@ import javax.xml.xpath.XPathFactory;
 
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
-import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import org.xml.sax.InputSource;
 
+import fr.openstreetmap.watch.model.ChangesetDescriptor;
+import fr.openstreetmap.watch.model.NodeChange;
+import fr.openstreetmap.watch.model.NodeDescriptor;
+import fr.openstreetmap.watch.model.WayChange;
+import fr.openstreetmap.watch.model.WayDescriptor;
 
-public class OSCFileParser {
+
+public class AugmentedDiffParser {
     private DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
     XPathFactory xPathfactory = XPathFactory.newInstance();
     
