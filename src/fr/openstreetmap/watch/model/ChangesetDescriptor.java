@@ -14,4 +14,7 @@ public class ChangesetDescriptor {
     public Map<Long, WayDescriptor> deletedWays = new HashMap<Long, WayDescriptor>();
     public Map<Long, WayChange> changedWays = new HashMap<Long, WayChange>(); 
     public Map<Long, WayDescriptor> newWays = new HashMap<Long, WayDescriptor>();
+    
+    //public List
+    
 }
