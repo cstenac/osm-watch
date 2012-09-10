@@ -1,0 +1,12 @@
+<ivysettings>
+    <settings defaultResolver="central"/>
+    <resolvers>
+        <ibiblio name="central" m2compatible="true"/>
+        <ibiblio name="hibernate-sqlite" root="https://hibernate-sqlite.googlecode.com/svn/trunk/mavenrepo" m2compatible="true"/>
+    </resolvers>
+     <modules>
+             <module organisation="com.applerao" resolver="hibernate-sqlite"/>
+    </modules>
+
+</ivysettings>
+
