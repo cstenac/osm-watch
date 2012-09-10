@@ -10,6 +10,21 @@
         <dependency org="commons-lang" name="commons-lang" rev="2.0"/>
         <dependency org="commons-io" name="commons-io" rev="2.0"/>
         <dependency org="com.google.guava" name="guava" rev="r09"/>
+        
+        <dependency org="org.hibernate" name="hibernate-entitymanager" rev="3.5.0-Final"/>
+        <dependency org="org.hibernate" name="hibernate-core" rev="3.5.0-Final"/>
+        <dependency org="org.hibernate" name="hibernate-validator" rev="4.2.0.Final"/>
+        
+        <dependency org="javax.persistence" name="persistence-api" rev="1.0"/>
+        <dependency org="com.applerao" name="hibernatesqlite" rev="1.0">
+           <exclude org="javax.transaction"/>
+           <exclude org="org.hibernate" name="hibernate"/>
+        </dependency>
+        <dependency org="geronimo-spec" name="geronimo-spec-jta" rev="1.0.1B-rc4"/>
+        
+        <dependency org="org.xerial" name="sqlite-jdbc" rev="3.7.2"/>
+        
+        <dependency org="junit" name="junit" rev="4.8.1"/>
     </dependencies>
 </ivy-module>
 
