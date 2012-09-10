@@ -48,18 +48,7 @@ public class Main {
         });
         
         for (ChangesetDescriptor cd : l) {
-            System.out.println("Changeset " + cd.id);
-            for (NodeChange nc : cd.changedNodes.values()) {
-                System.out.println(" CHANGED IN " + nc.changeset + " from " + nc.before.version +" to " + nc.after.version + " from c" + nc.before.changeset);
-            }
-            for (NodeDescriptor nd : cd.deletedNodes.values()) {
-                System.out.println(" DELETED IN " + nd.changeset +" -> " + nd.id);
-            }
-            System.out.println(" " + cd.newNodes.size());
-            
-            System.out.println(" " + cd.changedWays.size());
-            System.out.println(" " + cd.deletedWays.size());
-            System.out.println(" " + cd.newWays.size());
+            System.out.println(ChangesetDescriptorDumper.dump(cd));
         }
     }
 }
