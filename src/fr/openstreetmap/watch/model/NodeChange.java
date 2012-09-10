@@ -3,9 +3,14 @@ import java.util.Map;
 import java.util.Set;
 
 import com.google.common.base.Preconditions;
+import com.vividsolutions.jts.geom.Coordinate;
+import com.vividsolutions.jts.geom.GeometryFactory;
+import com.vividsolutions.jts.geom.Point;
 
 
 public class NodeChange {
+    private static GeometryFactory factory = new GeometryFactory();
+    
     public NodeChange( NodeDescriptor before, NodeDescriptor after) {
         Preconditions.checkArgument(before.id == after.id);
         assert(after.changeset > before.changeset);
@@ -24,9 +29,11 @@ public class NodeChange {
     public NodeDescriptor before;
     public NodeDescriptor after;
     
-    /* Get the distance in kilometers by which this node moved */
-    public double getDisplacement() {
-        return 0.0;
+    public Point getPointBefore() {
+        return factory.createPoint(new Coordinate(before.lon, before.lat));
+    }
+    public Point getPointAfter() {
+        return factory.createPoint(new Coordinate(after.lon, after.lat));
     }
     
     public Set<String> getRemovedTags() {
