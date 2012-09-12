@@ -1,13 +1,40 @@
 package fr.openstreetmap.watch;
+import java.io.IOException;
+import java.io.StringReader;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
+import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.parsers.ParserConfigurationException;
+import javax.xml.xpath.XPath;
+import javax.xml.xpath.XPathConstants;
+import javax.xml.xpath.XPathExpression;
+import javax.xml.xpath.XPathExpressionException;
+import javax.xml.xpath.XPathFactory;
+
+import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
+import org.xml.sax.InputSource;
+import org.xml.sax.SAXException;
 
 public class XMLUtils {
+    static DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
+    static XPathFactory xPathfactory = XPathFactory.newInstance();
+    
+    public static Document parse(String content) throws SAXException, IOException, ParserConfigurationException {
+        return dbf.newDocumentBuilder().parse(new InputSource(new StringReader(content)));
+    }
+    
+    public static NodeIterable xpath(Document d, String expr) throws XPathExpressionException {
+        XPath xpath = xPathfactory.newXPath();
+        XPathExpression xpathExpr = xpath.compile(expr);
+        NodeList nl = (NodeList)xpathExpr.evaluate(d, XPathConstants.NODESET);
+        return new NodeIterable(nl);
+    }
+    
     public static class NodeIterable implements Iterable<Node> {
         public NodeIterable(NodeList ndl) {
             this.ndl = ndl;
