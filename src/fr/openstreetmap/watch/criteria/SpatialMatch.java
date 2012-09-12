@@ -8,9 +8,9 @@ import fr.openstreetmap.watch.model.NodeChange;
 import fr.openstreetmap.watch.model.NodeDescriptor;
 
 public class SpatialMatch {
-    Alert alert;
+    public Alert alert;
     
-    List<NodeChange> matchingChangedNodes = new ArrayList<NodeChange>();
-    List<NodeDescriptor> matchingNewNodes = new ArrayList<NodeDescriptor>();
+    public List<NodeChange> matchingChangedNodes = new ArrayList<NodeChange>();
+    public List<NodeDescriptor> matchingNewNodes = new ArrayList<NodeDescriptor>();
 
 }

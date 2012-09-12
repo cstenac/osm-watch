@@ -137,6 +137,7 @@ public class AugmentedDiffParser {
 
     
     public void parse(String oscFileContent) throws Exception {
+        oscFileContent =  oscFileContent.replace("&", "&amp;");
         InputSource is = new InputSource(new StringReader(oscFileContent));
         DocumentBuilder db = dbf.newDocumentBuilder();
         

@@ -1,10 +1,11 @@
 package fr.openstreetmap.watch;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.HashSet;
+import java.util.Set;
 
-import com.vividsolutions.jts.geom.Envelope;
 import com.vividsolutions.jts.geom.Polygon;
+import com.vividsolutions.jts.io.ParseException;
+import com.vividsolutions.jts.io.WKTReader;
 
 import fr.openstreetmap.watch.criteria.TagsCriterion;
 import fr.openstreetmap.watch.model.AlertDesc;
@@ -14,8 +15,21 @@ import fr.openstreetmap.watch.model.AlertDesc;
  */
 public class Alert {
     public Alert() {}
-    public Alert(AlertDesc desc) {
+
+    public Alert(AlertDesc desc) throws ParseException {
+        this.desc = desc;
+
+        if (desc.getWatchedTags() != null) {
+            String[] tags = desc.getWatchedTags().split(",");
+            Set<String> s = new HashSet<String>();
+            for (String tag : tags) s.add(tag);
+            tagsFilter = new TagsCriterion(s);
+        }
         
+        if (desc.getPolygonWKT() != null) {
+            WKTReader reader = new WKTReader();
+            polygonFilter = (Polygon)reader.read(desc.getPolygonWKT());
+        }
     }
     
     public AlertDesc desc;
@@ -24,7 +38,6 @@ public class Alert {
 	public String user;
 	public String uniqueKey;
 	
-	public List<TagsCriterion> tagFilters = new ArrayList<TagsCriterion>();
-	
+	TagsCriterion tagsFilter;
 	public Polygon polygonFilter;
 }

@@ -8,6 +8,8 @@ import java.util.Map;
 import java.util.concurrent.locks.ReadWriteLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 
+import org.apache.log4j.Logger;
+
 import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jts.geom.GeometryFactory;
 import com.vividsolutions.jts.geom.Point;
@@ -53,6 +55,7 @@ public class SpatialFilter {
      * Get the list of alerts that match this changeset on the spatial criteria.
      */
     public Collection<SpatialMatch> getMatches(ChangesetDescriptor changeset) {
+        logger.info("Checking match against " + bboxTree.size() + " in tree and " + unfilteredAlerts.size() + " unfiltered");
         rwLock.readLock().lock();
         try {
             Map<Long, SpatialMatch> ret = new HashMap<Long, SpatialMatch>();
@@ -66,6 +69,9 @@ public class SpatialFilter {
                         getSpatialMatch(a, ret).matchingChangedNodes.add(nd);
                     }
                 }
+                for (Alert a : unfilteredAlerts) {
+                    getSpatialMatch(a, ret).matchingChangedNodes.add(nd);
+                }
             }
             for (NodeDescriptor nd : changeset.newNodes.values()) {
                 Geometry geom = nd.getPoint().buffer(0.1);
@@ -75,6 +81,9 @@ public class SpatialFilter {
                         getSpatialMatch(a, ret).matchingNewNodes.add(nd);
                     }
                 }
+                for (Alert a : unfilteredAlerts) {
+                    getSpatialMatch(a, ret).matchingNewNodes.add(nd);
+                }
             }
 
             return ret.values();
@@ -83,5 +92,7 @@ public class SpatialFilter {
             rwLock.readLock().unlock();
         }
     }
+    
+    private static Logger logger =Logger.getLogger("osm.watch.filter");
 
 }
