@@ -7,6 +7,7 @@ import com.vividsolutions.jts.geom.Envelope;
 import com.vividsolutions.jts.geom.Polygon;
 
 import fr.openstreetmap.watch.criteria.TagsCriterion;
+import fr.openstreetmap.watch.model.AlertDesc;
 
 /**
  * Runtime representation of an alert

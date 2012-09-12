@@ -4,6 +4,8 @@ import org.apache.log4j.BasicConfigurator;
 import org.apache.log4j.Logger;
 import org.junit.Test;
 
+import fr.openstreetmap.watch.model.AlertDesc;
+
 public class MainTest {
     @Test
     public void a() {

@@ -26,8 +26,8 @@ import org.w3c.dom.Node;
 import sun.security.pkcs11.Secmod.DbMode;
 
 import fr.openstreetmap.watch.DatabaseManager;
-import fr.openstreetmap.watch.UserDesc;
 import fr.openstreetmap.watch.XMLUtils;
+import fr.openstreetmap.watch.model.UserDesc;
 
 public class AuthenticationHandler {
     static final String request_token_url = "http://www.openstreetmap.org/oauth/request_token"        ;                                                                                                                     
@@ -106,8 +106,6 @@ public class AuthenticationHandler {
         UserDesc ud = new UserDesc();
         
         Document doc = XMLUtils.parse(osmResponse);
-        System.out.println("YOU ARE " + osmResponse);
-        
         Element e = (Element)XMLUtils.xpath(doc, "/osm/user").iterator().next();
         ud.setAccessToken(consumer.getToken());
         ud.setAccessTokenSecret(consumer.getTokenSecret());

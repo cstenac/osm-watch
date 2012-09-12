@@ -1,4 +1,4 @@
-package fr.openstreetmap.watch;
+package fr.openstreetmap.watch.parsers;
 import java.io.StringReader;
 import java.util.HashMap;
 import java.util.Map;
@@ -15,6 +15,8 @@ import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
 import org.xml.sax.InputSource;
 
+import fr.openstreetmap.watch.XMLUtils;
+import fr.openstreetmap.watch.XMLUtils.ElementIterable;
 import fr.openstreetmap.watch.model.ChangesetDescriptor;
 import fr.openstreetmap.watch.model.NodeChange;
 import fr.openstreetmap.watch.model.NodeDescriptor;

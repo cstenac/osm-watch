@@ -1,4 +1,4 @@
-package fr.openstreetmap.watch;
+package fr.openstreetmap.watch.model;
 
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;

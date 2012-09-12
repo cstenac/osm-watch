@@ -11,18 +11,14 @@ import javax.persistence.Query;
 import org.apache.log4j.Logger;
 import org.springframework.stereotype.Service;
 
+import fr.openstreetmap.watch.model.AlertDesc;
+
 @Service
 public class DatabaseManager {
     EntityManager em;
     
-    public DatabaseManager() {
-            System.out.println("**************** CREATE DBM");
-    }
-    
     @PostConstruct
     public void init() {
-        System.out.println("**************** INIT DBM");
-
         EntityManagerFactory emf = Persistence.createEntityManagerFactory("PU");
         em = emf.createEntityManager();
     }

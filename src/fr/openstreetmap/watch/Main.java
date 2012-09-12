@@ -12,6 +12,7 @@ import org.apache.commons.io.FileUtils;
 import fr.openstreetmap.watch.model.ChangesetDescriptor;
 import fr.openstreetmap.watch.model.NodeChange;
 import fr.openstreetmap.watch.model.NodeDescriptor;
+import fr.openstreetmap.watch.parsers.AugmentedDiffParser;
 
 
 public class Main {
