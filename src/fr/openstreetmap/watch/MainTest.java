@@ -7,11 +7,11 @@ import org.junit.Test;
 public class MainTest {
     @Test
     public void a() {
-        MainManager mm = new MainManager();
+        DatabaseManager mm = new DatabaseManager();
         mm.init();
         
         AlertDesc ad = new AlertDesc();
-        ad.setUser("foo");
+//        ad.setUser("foo");
         
         mm.addAlert(ad);
     }

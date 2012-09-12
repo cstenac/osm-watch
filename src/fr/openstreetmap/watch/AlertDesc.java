@@ -4,6 +4,8 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
 
 @Entity
 public class AlertDesc {
@@ -12,12 +14,6 @@ public class AlertDesc {
     }
     public void setId(long id) {
         this.id = id;
-    }
-    public String getUser() {
-        return user;
-    }
-    public void setUser(String user) {
-        this.user = user;
     }
     public String getUniqueKey() {
         return uniqueKey;
@@ -37,10 +33,24 @@ public class AlertDesc {
     public void setPolygonWKT(String polygonWKT) {
         this.polygonWKT = polygonWKT;
     }
+    
+    public UserDesc getUser() {
+        return user;
+    }
+    public void setUser(UserDesc user) {
+        this.user = user;
+    }
+
+
+
+
     @Id
     @GeneratedValue(strategy=GenerationType.AUTO)
     private long id;
-    private String user;
+
+    @ManyToOne
+    private UserDesc user;
+    
     private String uniqueKey;
     private String watchedTags;
     private String polygonWKT;
