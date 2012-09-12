@@ -8,6 +8,7 @@ import java.util.Comparator;
 import java.util.List;
 
 import org.apache.commons.io.FileUtils;
+import org.apache.log4j.BasicConfigurator;
 
 import fr.openstreetmap.watch.model.ChangesetDescriptor;
 import fr.openstreetmap.watch.model.NodeChange;
@@ -17,6 +18,7 @@ import fr.openstreetmap.watch.parsers.AugmentedDiffParser;
 
 public class Main {
     public static void main(String[] args) throws Exception {
+        BasicConfigurator.configure();
         String s = FileUtils.readFileToString(new File("/tmp/000.osc"), "utf8");
         s = s.replace("&", "&amp;");
         AugmentedDiffParser opf = new AugmentedDiffParser();
