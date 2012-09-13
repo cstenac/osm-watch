@@ -42,8 +42,10 @@ public class AuthenticationHandler {
 
     public static Map<String, String> parseCookies(HttpServletRequest req) {
         Map<String, String> ret = new HashMap<String, String>();
-        for (Cookie c : req.getCookies()) {
-            ret.put(c.getName(), c.getValue());
+        if (req.getCookies() != null) {
+            for (Cookie c : req.getCookies()) {
+                ret.put(c.getName(), c.getValue());
+            }
         }
         return ret;
     }

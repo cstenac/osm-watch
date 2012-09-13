@@ -36,8 +36,12 @@ public class Engine {
         logger.info("Loading spatial filter");
         /* Preload the filters */
         for (AlertDesc ad : dbManager.getAlerts()) {
+            try {
             Alert a = new Alert(ad);
             spatialFilter.addAlert(a);
+            } catch (Exception e) {
+                logger.error("Failed to load alert " + ad.getId(), e);
+            }
         }
     }
 

@@ -1,6 +1,7 @@
 package fr.openstreetmap.watch.model;
 
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
@@ -41,14 +42,11 @@ public class AlertDesc {
         this.user = user;
     }
 
-
-
-
     @Id
     @GeneratedValue(strategy=GenerationType.AUTO)
     private long id;
 
-    @ManyToOne
+    @ManyToOne(fetch=FetchType.LAZY)
     private UserDesc user;
     
     private String uniqueKey;
