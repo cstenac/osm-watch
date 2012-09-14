@@ -1,0 +1,39 @@
+body {
+    font-family: Arial;
+/*        min-height: 100%;                                                                                                                                                                                          
+    overflow: hidden;                                                                                                                                                                                          
+    margin: 0px;
+    */ 
+}
+
+#map {
+	height:400px;
+	width:600px;
+}
+
+		.leaflet-control-draw { -moz-border-radius: 7px; -webkit-border-radius: 7px; border-radius: 7px; }
+		.leaflet-control-draw { padding: 5px; background: rgba(0, 0, 0, 0.25); }
+		.leaflet-control-draw a { background-color: rgba(255, 255, 255, 0.75) }
+		.leaflet-control-draw a { background-position: 50% 50%; background-repeat: no-repeat; display: block; }
+		.leaflet-control-draw a { -moz-border-radius: 4px; -webkit-border-radius: 4px; border-radius: 4px; width: 19px; height: 19px; margin-top: 5px; }
+		.leaflet-control-draw a:first-child { margin-top: 0px }
+		.leaflet-control-draw a:hover { background-color: #fff }
+		.leaflet-touch .leaflet-control-draw a { width: 27px; height: 27px; }
+		.leaflet-control-draw-marker { background-image: url(https://raw.github.com/brunob/leaflet.draw/master/draw-marker.png) }
+		.leaflet-control-draw-polyline { background-image: url(https://raw.github.com/brunob/leaflet.draw/master/draw-polyline.png) }
+		.leaflet-control-draw-polygon { background-image: url(https://raw.github.com/brunob/leaflet.draw/master/draw-polygon.png) }
+		.leaflet-control-draw-rectangle { background-image: url(https://raw.github.com/brunob/leaflet.draw/master/draw-rectangle.png) }
+
+
+#add_alert_box {                                                                                                                                                                                                       
+        -moz-border-radius: 6px;                                                                                                                                                                               
+        -webkit-border-radius: 6px;                                                                                                                                                                            
+        -webkit-box-shadow: rgba(0,0,0,.6) 0px 2px 12px;                                                                                                                                                       
+        -moz-box-shadow:  rgba(0,0,0,.6) 0px 2px 12px;;                                                                                                                                                        
+        padding: 14px 22px;                                                                                                                                                                                    
+        width: 650px;                                                                                                                                                                                          
+        position: relative;                                                                                                                                                                                    
+        display: none;                                                                                                                                                                                         
+        border: 1px solid #536376;                                                                                                                                                                             
+        background-color:#fff;                                                                                                                                                                                 
+}     
