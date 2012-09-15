@@ -2,8 +2,6 @@ package fr.openstreetmap.watch.controllers;
 
 import java.io.IOException;
 
-import javax.annotation.PostConstruct;
-import javax.persistence.Query;
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -64,7 +62,7 @@ public class AuthenticationStuffController {
             */
             dbManager.getEM().getTransaction().commit();
 
-            return "home";
+            return "redirect:home";
             //resp.addHeader("Location", AuthenticationHandler.afterLoginUrl);
         } catch (Throwable e) {
             logger.error("Failed to authenticate", e); 

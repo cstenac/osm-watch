@@ -6,12 +6,16 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.apache.log4j.Logger;
+import org.json.JSONException;
+import org.json.JSONObject;
+import org.json.JSONWriter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import fr.openstreetmap.watch.DatabaseManager;
+import fr.openstreetmap.watch.SecretKeyGenerator;
 import fr.openstreetmap.watch.model.db.AlertDesc;
 import fr.openstreetmap.watch.model.db.UserDesc;
 
@@ -21,6 +25,33 @@ public class AlertsEditionController {
     @Autowired
     public void setDatabaseManager(DatabaseManager dbManager) {
         this.dbManager = dbManager;
+    }
+    
+    @RequestMapping(value="/api/list_alerts")
+    public void listAlerts(HttpServletRequest req, HttpServletResponse resp) throws IOException {
+    	 UserDesc ud = AuthenticationHandler.verityAuth(req, dbManager);
+         if (ud == null) {
+             resp.sendError(403, "Not authenticated");
+             return;
+         }
+         resp.setContentType("application/json");
+         JSONWriter wr = new JSONWriter(resp.getWriter());
+         try {
+			wr.object().key("alerts").array();
+			for (AlertDesc ad : ud.getAlerts()) {
+				wr.object();
+				if (ad.getPolygonWKT() != null) wr.key("polygon").value(ad.getPolygonWKT());
+				if (ad.getWatchedTags() != null) wr.key("tags").value(ad.getWatchedTags());
+				wr.key("key").value(ad.getUniqueKey());
+				wr.endObject();
+			}
+			wr.endArray().endObject();
+			
+		} catch (JSONException e) {
+			logger.error(e);
+			throw new IOException(e);
+		}
+         
     }
 
     @RequestMapping(value="/api/new_alert")
@@ -40,9 +71,12 @@ public class AlertsEditionController {
         if (tags != null && tags.length() > 0) {
             ad.setWatchedTags(tags);
         }
+        ad.setUniqueKey(SecretKeyGenerator.generate());
+        
         dbManager.getEM().getTransaction().begin();
         try {
         	dbManager.getEM().persist(ad);
+        	dbManager.getEM().flush();
         	dbManager.getEM().getTransaction().commit();
             
             resp.setContentType("application/json");

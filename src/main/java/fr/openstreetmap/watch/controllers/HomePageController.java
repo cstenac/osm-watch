@@ -24,11 +24,7 @@ public class HomePageController {
 
     @RequestMapping(value="/")
     public String home(HttpServletRequest req, ModelMap map) throws IOException {
-        System.out.println("REQ " + req);
-        System.out.println("REQC " + req.getCookies());
-        
         UserDesc ud = AuthenticationHandler.verityAuth(req, dbManager);
-        System.out.println("GOT UD " + ud);
         map.addAttribute("ud", ud);
         return "home";
     }

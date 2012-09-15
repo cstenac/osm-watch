@@ -21,9 +21,6 @@ import org.apache.commons.io.IOUtils;
 import org.apache.log4j.Logger;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
-import org.w3c.dom.Node;
-
-import sun.security.pkcs11.Secmod.DbMode;
 
 import fr.openstreetmap.watch.DatabaseManager;
 import fr.openstreetmap.watch.XMLUtils;
@@ -56,7 +53,7 @@ public class AuthenticationHandler {
         if (cookieAT == null) {
             return null; // Not authenticated at all
         }
-        
+        dbManager.getEM().getTransaction().begin();
         Query q = dbManager.getEM().createQuery ("SELECT x FROM UserDesc x WHERE accessToken= ?1");
         q.setParameter(1, cookieAT);
         List<UserDesc> l = q.getResultList();
@@ -64,6 +61,9 @@ public class AuthenticationHandler {
             logger.warn("No valid user for this access token");
             return null;
         }
+        System.out.println("****** VERIFY AUTH, FOUND " + l.get(0).getAlerts().size());
+        dbManager.getEM().getTransaction().rollback();
+        
         return l.get(0);
     }
   
