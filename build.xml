@@ -7,7 +7,7 @@
     <property name="lib.dir" value="lib"/>
     <property name="clib.dir" value="lib/core"/>
     <property name="dist.dir" value="dist"/>
-    <property name="src.dir" value="src"/>
+    <property name="src.dir" value="src/main/java"/>
     <property name="build.war.tmp" value="build/war-tmp"/>
     <property name="war.file" value="osm-watch.war" />
     <property name="jar.file" value="osm-watch-standalone.jar" />
