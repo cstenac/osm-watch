@@ -67,10 +67,32 @@ function onDrawingEnded(e) {
 	}
 };
 
+function reloadAlertsList() {
+	$("alerts_list").html("<h3>Loading ...</h3>");
+	$.getJSON("api/list_alerts", function(data) {
+		var html = "<table>";
+		
+		for (var i in data.alerts) {
+			html += "<tr><td>";
+			if (data.alerts[i].tags == null) {
+				html += "all tags";
+			} else {
+				html += data.alerts[i].tags;
+			}
+			html += "</td><td><a href=\"api/rss_feed?key="  + data.alerts[i].key + "\">RSS feed</a></td></tr>";
+		}
+		html +="</table>";
+		
+		$("#alerts_list").html(html);
+	});
+}
+
 $(document).ready(function() {
 	$("#new_alert_button").click(function(e) {
 		newAlert();
 	});
+	
+	reloadAlertsList();
 	
 	$("#add_alert_button").click(function(e) {
 		wkt = $("#polygon_input").val();
@@ -81,6 +103,9 @@ $(document).ready(function() {
 		$.ajax({url: url, dataType: "json", success: function(json) {
 			console.log("Alert added");
 			$("#add_alert_box").trigger("close");
+			
+			reloadAlertsList();
+			
 		}, error: function(x,y,z) {
 			console.log(x.responseText);
 			console.log(y);

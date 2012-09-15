@@ -32,10 +32,9 @@
     <c:if test="${not empty ud}">
             Welcome <c:out value="${ud.screenName}" />
             
-            Alerts
-            <c:forEach items="${ud.alerts}" var="alert">
-                "ALERT " ${alert.polygonWKT}
-            </c:forEach>
+            <h2>Your alerts</h2>
+            <div id="alerts_list">
+            </div>
 
         <a href="#" id="new_alert_button">New alert</a>
 
