@@ -48,10 +48,14 @@
       <copy todir="${build.war.tmp}/WEB-INF/lib">
         <fileset dir="${clib.dir}" />
       </copy>
-
       <copy todir="${build.war.tmp}/WEB-INF/classes">
         <fileset dir="${build.dir}/classes" />
       </copy>
+      <copy todir="${build.war.tmp}/WEB-INF/classes/META-INF">
+        <fileset dir="src/META-INF" />
+      </copy>
+
+
 
       <mkdir dir="${dist.dir}" />
       <war destfile="${dist.dir}/${war.file}" basedir="${build.war.tmp}" />

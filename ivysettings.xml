@@ -5,7 +5,7 @@
         <ibiblio name="hibernate-sqlite" root="https://hibernate-sqlite.googlecode.com/svn/trunk/mavenrepo" m2compatible="true"/>
     </resolvers>
      <modules>
-             <module organisation="com.applerao" resolver="hibernate-sqlite"/>
+             <module organisation="com.applerao" resolver="hibernate-sqlite" name="hibernatesqlite"/>
     </modules>
 
 </ivysettings>

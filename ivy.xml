@@ -3,10 +3,10 @@
 
     <configurations>
       <conf name="core" />
-      <conf name="standalone" extends="core" />
+<!--      <conf name="standalone" extends="core" />-->
     </configurations>
 
-    <dependencies defaultconfmapping="core->default">
+    <dependencies defaultconfmapping="core -> default">
         <dependency org="log4j" name="log4j" rev="1.2.15">
           <exclude org="com.sun.jdmk"/>
            <exclude org="com.sun.jmx"/>
@@ -15,14 +15,21 @@
         <dependency org="com.vividsolutions" name="jts" rev="1.11"/>
         <dependency org="commons-lang" name="commons-lang" rev="2.0"/>
         <dependency org="commons-io" name="commons-io" rev="2.0"/>
+        <dependency org="commons-collections" name="commons-collections" rev="3.2.1"/>
         <dependency org="com.google.guava" name="guava" rev="r09"/>
         
         <!-- Database persistency -->
 
         <dependency org="org.hibernate" name="hibernate-entitymanager" rev="3.5.0-Final"/>
         <dependency org="org.hibernate" name="hibernate-core" rev="3.5.0-Final"/>
+        <dependency org="org.hibernate" name="hibernate-commons-annotations" rev="3.2.0.Final"/>
         <dependency org="org.hibernate" name="hibernate-validator" rev="4.2.0.Final"/>
-        <dependency org="javax.persistence" name="persistence-api" rev="1.0"/>
+        <dependency org="org.hibernate.javax.persistence" name="hibernate-jpa-2.0-api" rev="1.0.1.Final"/>
+        <dependency org="javassist" name="javassist" rev="3.12.1.GA"/>
+<!--        <dependency org="org.hibernate" name="ejb3-persistence" rev="3.3.2.Beta1"/>
+        <dependency org="javax.persistence" name="persistence-api" rev="1.0.2"/>
+
+	-->
         <dependency org="com.applerao" name="hibernatesqlite" rev="1.0">
            <exclude org="javax.transaction"/>
            <exclude org="org.hibernate" name="hibernate"/>
@@ -41,17 +48,18 @@
         </dependency>
         <dependency org="org.springframework" name="spring-webmvc" rev="3.1.2.RELEASE" />
         <dependency org="javax.servlet" name="jstl" rev="1.2" />
+        <dependency org="javax.servlet" name="servlet-api" rev="3.0-alpha-1" />
         <dependency org="taglibs" name="standard" rev="1.1.2" />
         <!-- Tests -->
         <dependency org="junit" name="junit" rev="4.8.1"/>
 
         <!-- Front -->
-        <dependency org="org.eclipse.jetty" name="jetty-server" rev="8.1.5.v20120716" conf="standalone->default">
+<!--        <dependency org="org.eclipse.jetty" name="jetty-server" rev="8.1.5.v20120716" conf="standalone->default">
           <exclude org="org.eclipse.jetty.orbit" />
           <exclude org="javax.servlet" />
         </dependency>
         <dependency org="org.eclipse.jetty" name="jetty-webapp" rev="8.1.5.v20120716" conf="standalone->default"/>
-
+-->
     </dependencies>
 </ivy-module>
 
