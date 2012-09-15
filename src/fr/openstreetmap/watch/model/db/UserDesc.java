@@ -1,4 +1,4 @@
-package fr.openstreetmap.watch.model;
+package fr.openstreetmap.watch.model.db;
 
 import java.util.Set;
 
@@ -8,6 +8,7 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.OneToMany;
+
 
 @Entity
 public class UserDesc {

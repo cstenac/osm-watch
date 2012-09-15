@@ -11,7 +11,7 @@ import javax.persistence.Query;
 import org.apache.log4j.Logger;
 import org.springframework.stereotype.Service;
 
-import fr.openstreetmap.watch.model.AlertDesc;
+import fr.openstreetmap.watch.model.db.AlertDesc;
 
 @Service
 public class DatabaseManager {

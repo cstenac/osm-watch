@@ -15,7 +15,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 
 import fr.openstreetmap.watch.DatabaseManager;
-import fr.openstreetmap.watch.model.UserDesc;
+import fr.openstreetmap.watch.model.db.UserDesc;
 
 @Controller
 public class AuthenticationStuffController {

@@ -4,7 +4,7 @@ import org.apache.log4j.BasicConfigurator;
 import org.apache.log4j.Logger;
 import org.junit.Test;
 
-import fr.openstreetmap.watch.model.AlertDesc;
+import fr.openstreetmap.watch.model.db.AlertDesc;
 
 public class MainTest {
     @Test

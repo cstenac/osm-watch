@@ -27,7 +27,7 @@ import sun.security.pkcs11.Secmod.DbMode;
 
 import fr.openstreetmap.watch.DatabaseManager;
 import fr.openstreetmap.watch.XMLUtils;
-import fr.openstreetmap.watch.model.UserDesc;
+import fr.openstreetmap.watch.model.db.UserDesc;
 
 public class AuthenticationHandler {
     static final String request_token_url = "http://www.openstreetmap.org/oauth/request_token"        ;                                                                                                                     

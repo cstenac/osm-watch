@@ -17,9 +17,9 @@ import com.vividsolutions.jts.io.ParseException;
 
 import fr.openstreetmap.watch.criteria.SpatialFilter;
 import fr.openstreetmap.watch.criteria.SpatialMatch;
-import fr.openstreetmap.watch.model.AlertDesc;
 import fr.openstreetmap.watch.model.ChangesetDescriptor;
 import fr.openstreetmap.watch.model.MatchDescriptor;
+import fr.openstreetmap.watch.model.db.AlertDesc;
 import fr.openstreetmap.watch.parsers.AugmentedDiffParser;
 
 @Service

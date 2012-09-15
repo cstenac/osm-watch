@@ -1,4 +1,4 @@
-package fr.openstreetmap.watch.model;
+package fr.openstreetmap.watch.model.db;
 
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
@@ -7,6 +7,7 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
+
 
 @Entity
 public class AlertDesc {

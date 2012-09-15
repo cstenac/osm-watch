@@ -8,7 +8,7 @@ import com.vividsolutions.jts.io.ParseException;
 import com.vividsolutions.jts.io.WKTReader;
 
 import fr.openstreetmap.watch.criteria.TagsCriterion;
-import fr.openstreetmap.watch.model.AlertDesc;
+import fr.openstreetmap.watch.model.db.AlertDesc;
 
 /**
  * Runtime representation of an alert
