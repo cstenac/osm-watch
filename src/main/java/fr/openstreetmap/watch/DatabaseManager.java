@@ -11,7 +11,7 @@ import javax.persistence.Query;
 import org.apache.log4j.Logger;
 import org.springframework.stereotype.Service;
 
-import fr.openstreetmap.watch.model.db.AlertDesc;
+import fr.openstreetmap.watch.model.db.Alert;
 
 @Service
 public class DatabaseManager {
@@ -23,7 +23,7 @@ public class DatabaseManager {
         em = emf.createEntityManager();
     }
     
-    public void addAlert(AlertDesc ad) {
+    public void addAlert(Alert ad) {
         em.getTransaction().begin();
         em.persist(ad);
         em.getTransaction().commit();
@@ -33,9 +33,9 @@ public class DatabaseManager {
         return em;
     }
     
-    public List<AlertDesc> getAlerts() {
+    public List<Alert> getAlerts() {
         Query q = em.createQuery ("SELECT x FROM AlertDesc x");
-        return (List<AlertDesc>) q.getResultList ();
+        return (List<Alert>) q.getResultList ();
     }
     
     public void deleteAlert(String uniqueKey) {
@@ -43,9 +43,9 @@ public class DatabaseManager {
         
         Query q = em.createQuery ("SELECT x FROM AlertDesc x WHERE x.uniqueKey = ?1");
         q.setParameter (1, uniqueKey);
-        List<AlertDesc> results = (List<AlertDesc>) q.getResultList ();
+        List<Alert> results = (List<Alert>) q.getResultList ();
         logger.info("Removing alert " + uniqueKey +" -> " + results.size() + " matches");
-        for (AlertDesc ar : results) {
+        for (Alert ar : results) {
             em.remove(ar);
         }
         em.getTransaction().commit();

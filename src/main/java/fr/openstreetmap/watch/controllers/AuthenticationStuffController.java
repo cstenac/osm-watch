@@ -13,7 +13,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 
 import fr.openstreetmap.watch.DatabaseManager;
-import fr.openstreetmap.watch.model.db.UserDesc;
+import fr.openstreetmap.watch.model.db.User;
 
 @Controller
 public class AuthenticationStuffController {
@@ -47,7 +47,7 @@ public class AuthenticationStuffController {
         }
         try {
             System.out.println("Processing OAuth callback");
-            UserDesc ud = AuthenticationHandler.processAuthReturn(req, resp);
+            User ud = AuthenticationHandler.processAuthReturn(req, resp);
 
             /* Store the uid in the DB and in a cookie */
             resp.addCookie(new Cookie("access_token", ud.getAccessToken()));

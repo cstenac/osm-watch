@@ -1,7 +1,9 @@
-package fr.openstreetmap.watch.model;
+package fr.openstreetmap.watch.matching;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import fr.openstreetmap.watch.model.NodeDescriptor;
 
 /** Describes what matches and why */
 public class MatchDescriptor {

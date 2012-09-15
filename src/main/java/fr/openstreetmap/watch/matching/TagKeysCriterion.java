@@ -1,20 +1,18 @@
-package fr.openstreetmap.watch.criteria;
+package fr.openstreetmap.watch.matching;
 
 import java.util.Set;
 
-import fr.openstreetmap.watch.model.ChangesetDescriptor;
-import fr.openstreetmap.watch.model.MatchDescriptor;
 import fr.openstreetmap.watch.model.NodeDescriptor;
 
-public class TagsCriterion extends Criterion {
+public class TagKeysCriterion extends Criterion {
 	Set<String> watchedKeys;
-	public TagsCriterion(Set<String> watchedKeys) {
+	public TagKeysCriterion(Set<String> watchedKeys) {
 		this.watchedKeys = watchedKeys;
 	}
 	@Override
-	public MatchDescriptor matches(ChangesetDescriptor changeset) {
+	public MatchDescriptor matches(SpatialMatch changeset) {
 		MatchDescriptor md = new MatchDescriptor();
-		for (NodeDescriptor n : changeset.newNodes.values()) {
+		for (NodeDescriptor n : changeset.matchingNewNodes) {
 			if (n.tags != null) {
 				for (String k : n.tags.keySet()) {
 					if (watchedKeys.contains(k)) {

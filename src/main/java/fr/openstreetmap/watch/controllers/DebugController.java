@@ -14,8 +14,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 
 import fr.openstreetmap.watch.DatabaseManager;
 import fr.openstreetmap.watch.Engine;
-import fr.openstreetmap.watch.model.db.AlertDesc;
-import fr.openstreetmap.watch.model.db.UserDesc;
+import fr.openstreetmap.watch.model.db.Alert;
+import fr.openstreetmap.watch.model.db.User;
 
 @Controller
 public class DebugController {
@@ -43,7 +43,7 @@ public class DebugController {
     
     @RequestMapping(value="/debug/add_alert")
     public void newAlert(String uid, String tags, String polygons, HttpServletResponse resp) throws IOException {
-        AlertDesc ad = new AlertDesc();
+        Alert ad = new Alert();
         ad.setPolygonWKT(polygons);
         ad.setWatchedTags(tags);
         try {

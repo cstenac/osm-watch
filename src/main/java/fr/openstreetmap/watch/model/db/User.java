@@ -11,7 +11,7 @@ import javax.persistence.OneToMany;
 
 
 @Entity
-public class UserDesc {
+public class User {
     @Id
     private long osmId;
     private String screenName;
@@ -32,12 +32,12 @@ public class UserDesc {
         this.accessTokenSecret = accessTokenSecret;
     }
     @OneToMany(mappedBy="user", fetch= FetchType.LAZY)
-    private Set<AlertDesc> alerts;
+    private Set<Alert> alerts;
     
-    public Set<AlertDesc> getAlerts() {
+    public Set<Alert> getAlerts() {
         return alerts;
     }
-    public void setAlerts(Set<AlertDesc> alerts) {
+    public void setAlerts(Set<Alert> alerts) {
         this.alerts = alerts;
     }
     public long getOsmId() {
@@ -75,7 +75,7 @@ public class UserDesc {
         if (this == obj) return true;
         if (obj == null) return false;
         if (getClass() != obj.getClass()) return false;
-        UserDesc other = (UserDesc) obj;
+        User other = (User) obj;
         if (accessToken == null) {
             if (other.accessToken != null) return false;
         } else if (!accessToken.equals(other.accessToken)) return false;

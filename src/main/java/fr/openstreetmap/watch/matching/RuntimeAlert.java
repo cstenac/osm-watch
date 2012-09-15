@@ -1,4 +1,4 @@
-package fr.openstreetmap.watch;
+package fr.openstreetmap.watch.matching;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -7,23 +7,22 @@ import com.vividsolutions.jts.geom.Polygon;
 import com.vividsolutions.jts.io.ParseException;
 import com.vividsolutions.jts.io.WKTReader;
 
-import fr.openstreetmap.watch.criteria.TagsCriterion;
-import fr.openstreetmap.watch.model.db.AlertDesc;
+import fr.openstreetmap.watch.model.db.Alert;
 
 /**
  * Runtime representation of an alert
  */
-public class Alert {
-    public Alert() {}
+public class RuntimeAlert {
+    public RuntimeAlert() {}
 
-    public Alert(AlertDesc desc) throws ParseException {
+    public RuntimeAlert(Alert desc) throws ParseException {
         this.desc = desc;
 
         if (desc.getWatchedTags() != null) {
             String[] tags = desc.getWatchedTags().split(",");
             Set<String> s = new HashSet<String>();
             for (String tag : tags) s.add(tag);
-            tagsFilter = new TagsCriterion(s);
+            tagsFilter = new TagKeysCriterion(s);
         }
         
         if (desc.getPolygonWKT() != null) {
@@ -32,12 +31,12 @@ public class Alert {
         }
     }
     
-    public AlertDesc desc;
+    public Alert desc;
     
     public long id;
 	public String user;
 	public String uniqueKey;
 	
-	TagsCriterion tagsFilter;
+	public TagKeysCriterion tagsFilter;
 	public Polygon polygonFilter;
 }

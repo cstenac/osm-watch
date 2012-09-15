@@ -1,4 +1,4 @@
-package fr.openstreetmap.watch;
+package fr.openstreetmap.watch.util;
 import java.io.IOException;
 import java.io.StringReader;
 import java.util.ArrayList;

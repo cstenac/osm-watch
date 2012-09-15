@@ -15,11 +15,12 @@ import org.springframework.stereotype.Service;
 
 import com.vividsolutions.jts.io.ParseException;
 
-import fr.openstreetmap.watch.criteria.SpatialFilter;
-import fr.openstreetmap.watch.criteria.SpatialMatch;
+import fr.openstreetmap.watch.matching.MatchDescriptor;
+import fr.openstreetmap.watch.matching.RuntimeAlert;
+import fr.openstreetmap.watch.matching.SpatialFilter;
+import fr.openstreetmap.watch.matching.SpatialMatch;
 import fr.openstreetmap.watch.model.ChangesetDescriptor;
-import fr.openstreetmap.watch.model.MatchDescriptor;
-import fr.openstreetmap.watch.model.db.AlertDesc;
+import fr.openstreetmap.watch.model.db.Alert;
 import fr.openstreetmap.watch.parsers.AugmentedDiffParser;
 
 @Service
@@ -35,9 +36,9 @@ public class Engine {
     public void init() throws ParseException {
         logger.info("Loading spatial filter");
         /* Preload the filters */
-        for (AlertDesc ad : dbManager.getAlerts()) {
+        for (Alert ad : dbManager.getAlerts()) {
             try {
-            Alert a = new Alert(ad);
+            RuntimeAlert a = new RuntimeAlert(ad);
             spatialFilter.addAlert(a);
             } catch (Exception e) {
                 logger.error("Failed to load alert " + ad.getId(), e);
@@ -45,8 +46,8 @@ public class Engine {
         }
     }
 
-    public void addAlert(AlertDesc ad) throws Exception {
-        Alert a = new Alert(ad);
+    public void addAlert(Alert ad) throws Exception {
+        RuntimeAlert a = new RuntimeAlert(ad);
         dbManager.addAlert(ad);
         spatialFilter.addAlert(a);
     }
@@ -75,7 +76,7 @@ public class Engine {
                 if (sm.alert.tagsFilter == null) {
                     emitMatch(sm.alert);
                 } else {
-                    MatchDescriptor md = sm.alert.tagsFilter.matches(changeset);
+                    MatchDescriptor md = sm.alert.tagsFilter.matches(sm);
                     if (md.matches) {
                         logger.info("Tags criterion also matches");
                         emitMatch(sm.alert);
@@ -87,7 +88,7 @@ public class Engine {
         }
     }
 
-    private void emitMatch(Alert a) {
+    private void emitMatch(RuntimeAlert a) {
 
     }
 

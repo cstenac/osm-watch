@@ -13,10 +13,12 @@
            <exclude org="javax.jms"/>
         </dependency>
         <dependency org="com.vividsolutions" name="jts" rev="1.11"/>
-        <dependency org="commons-lang" name="commons-lang" rev="2.0"/>
+        <dependency org="commons-lang" name="commons-lang" rev="2.5"/>
         <dependency org="commons-io" name="commons-io" rev="2.0"/>
         <dependency org="commons-collections" name="commons-collections" rev="3.2.1"/>
         <dependency org="com.google.guava" name="guava" rev="r09"/>
+        
+        <dependency org="org.json" name="json" rev="20090211"/>
         
         <!-- Database persistency -->
 

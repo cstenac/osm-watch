@@ -12,7 +12,7 @@ import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.RequestMapping;
 
 import fr.openstreetmap.watch.DatabaseManager;
-import fr.openstreetmap.watch.model.db.UserDesc;
+import fr.openstreetmap.watch.model.db.User;
 
 @Controller
 public class HomePageController {
@@ -24,7 +24,7 @@ public class HomePageController {
 
     @RequestMapping(value="/")
     public String home(HttpServletRequest req, ModelMap map) throws IOException {
-        UserDesc ud = AuthenticationHandler.verityAuth(req, dbManager);
+        User ud = AuthenticationHandler.verityAuth(req, dbManager);
         map.addAttribute("ud", ud);
         return "home";
     }

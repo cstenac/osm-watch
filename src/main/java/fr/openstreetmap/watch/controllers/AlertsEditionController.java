@@ -15,9 +15,9 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import fr.openstreetmap.watch.DatabaseManager;
-import fr.openstreetmap.watch.SecretKeyGenerator;
-import fr.openstreetmap.watch.model.db.AlertDesc;
-import fr.openstreetmap.watch.model.db.UserDesc;
+import fr.openstreetmap.watch.model.db.Alert;
+import fr.openstreetmap.watch.model.db.User;
+import fr.openstreetmap.watch.util.SecretKeyGenerator;
 
 @Controller
 public class AlertsEditionController {
@@ -29,7 +29,7 @@ public class AlertsEditionController {
     
     @RequestMapping(value="/api/list_alerts")
     public void listAlerts(HttpServletRequest req, HttpServletResponse resp) throws IOException {
-    	 UserDesc ud = AuthenticationHandler.verityAuth(req, dbManager);
+    	 User ud = AuthenticationHandler.verityAuth(req, dbManager);
          if (ud == null) {
              resp.sendError(403, "Not authenticated");
              return;
@@ -38,7 +38,7 @@ public class AlertsEditionController {
          JSONWriter wr = new JSONWriter(resp.getWriter());
          try {
 			wr.object().key("alerts").array();
-			for (AlertDesc ad : ud.getAlerts()) {
+			for (Alert ad : ud.getAlerts()) {
 				wr.object();
 				if (ad.getPolygonWKT() != null) wr.key("polygon").value(ad.getPolygonWKT());
 				if (ad.getWatchedTags() != null) wr.key("tags").value(ad.getWatchedTags());
@@ -58,12 +58,12 @@ public class AlertsEditionController {
     public void newAlert(@RequestParam("tags") String tags, 
     					@RequestParam("wkt") String wkt,
     					HttpServletRequest req, HttpServletResponse resp) throws IOException {
-        UserDesc ud = AuthenticationHandler.verityAuth(req, dbManager);
+        User ud = AuthenticationHandler.verityAuth(req, dbManager);
         if (ud == null) {
             resp.sendError(403, "Not authenticated");
             return;
         }
-        AlertDesc ad = new AlertDesc();
+        Alert ad = new Alert();
         ad.setUser(ud);
         if (wkt != null && wkt.length() > 0 ) {
             ad.setPolygonWKT(wkt);

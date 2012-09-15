@@ -1,4 +1,4 @@
-package fr.openstreetmap.watch;
+package fr.openstreetmap.watch.parsers;
 
 import java.net.HttpURLConnection;
 import java.net.URL;
@@ -15,6 +15,11 @@ import org.springframework.stereotype.Service;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
+
+import fr.openstreetmap.watch.ApplicationConfigurator;
+import fr.openstreetmap.watch.DatabaseManager;
+import fr.openstreetmap.watch.Engine;
+import fr.openstreetmap.watch.util.XMLUtils;
 
 @Service
 public class LastAugmentedDownloader {

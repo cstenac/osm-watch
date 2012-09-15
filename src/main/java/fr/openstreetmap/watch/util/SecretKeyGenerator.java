@@ -1,4 +1,4 @@
-package fr.openstreetmap.watch;
+package fr.openstreetmap.watch.util;
 
 import java.security.MessageDigest;
 import java.security.SecureRandom;

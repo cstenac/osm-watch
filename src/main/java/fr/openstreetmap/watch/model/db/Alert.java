@@ -10,7 +10,7 @@ import javax.persistence.ManyToOne;
 
 
 @Entity
-public class AlertDesc {
+public class Alert {
   public long getId() {
         return id;
     }
@@ -36,10 +36,10 @@ public class AlertDesc {
         this.polygonWKT = polygonWKT;
     }
     
-    public UserDesc getUser() {
+    public User getUser() {
         return user;
     }
-    public void setUser(UserDesc user) {
+    public void setUser(User user) {
         this.user = user;
     }
 
@@ -48,7 +48,7 @@ public class AlertDesc {
     private long id;
 
     @ManyToOne(fetch=FetchType.LAZY)
-    private UserDesc user;
+    private User user;
     
     private String uniqueKey;
     private String watchedTags;

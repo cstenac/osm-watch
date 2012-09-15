@@ -15,7 +15,9 @@ import com.vividsolutions.jts.geom.LinearRing;
 import com.vividsolutions.jts.geom.Polygon;
 import com.vividsolutions.jts.geom.PrecisionModel;
 
-import fr.openstreetmap.watch.Alert;
+import fr.openstreetmap.watch.matching.RuntimeAlert;
+import fr.openstreetmap.watch.matching.SpatialFilter;
+import fr.openstreetmap.watch.matching.SpatialMatch;
 import fr.openstreetmap.watch.model.ChangesetDescriptor;
 import fr.openstreetmap.watch.model.NodeDescriptor;
 
@@ -28,9 +30,9 @@ public class SpatialFilterTest {
         cd.newNodes.put(id, n1);
     }
     
-    public Alert newBboxAlert(long id, double lat1, double lon1, double lat2, double lon2) {
+    public RuntimeAlert newBboxAlert(long id, double lat1, double lon1, double lat2, double lon2) {
         GeometryFactory gf = new GeometryFactory();
-        Alert a = new Alert();
+        RuntimeAlert a = new RuntimeAlert();
         a.id = id;
         Envelope e = new Envelope(new Coordinate(lon1, lat1), new Coordinate(lon2, lat2));
         a.polygonFilter = (Polygon)gf.toGeometry(e);

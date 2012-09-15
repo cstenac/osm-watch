@@ -23,8 +23,8 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
 import fr.openstreetmap.watch.DatabaseManager;
-import fr.openstreetmap.watch.XMLUtils;
-import fr.openstreetmap.watch.model.db.UserDesc;
+import fr.openstreetmap.watch.model.db.User;
+import fr.openstreetmap.watch.util.XMLUtils;
 
 public class AuthenticationHandler {
     static final String request_token_url = "http://www.openstreetmap.org/oauth/request_token"        ;                                                                                                                     
@@ -47,7 +47,7 @@ public class AuthenticationHandler {
         return ret;
     }
     
-    public static UserDesc verityAuth(HttpServletRequest req, DatabaseManager dbManager) {
+    public static User verityAuth(HttpServletRequest req, DatabaseManager dbManager) {
         Map<String, String> map = parseCookies(req);
         String cookieAT = map.get("access_token");
         if (cookieAT == null) {
@@ -56,7 +56,7 @@ public class AuthenticationHandler {
         dbManager.getEM().getTransaction().begin();
         Query q = dbManager.getEM().createQuery ("SELECT x FROM UserDesc x WHERE accessToken= ?1");
         q.setParameter(1, cookieAT);
-        List<UserDesc> l = q.getResultList();
+        List<User> l = q.getResultList();
         if (l.size() == 0) {
             logger.warn("No valid user for this access token");
             return null;
@@ -80,7 +80,7 @@ public class AuthenticationHandler {
         return;
     }
 
-    public static UserDesc processAuthReturn(HttpServletRequest req, HttpServletResponse resp) throws Exception {
+    public static User processAuthReturn(HttpServletRequest req, HttpServletResponse resp) throws Exception {
         OAuthConsumer consumer = new DefaultOAuthConsumer(consumerKey, consumerSecret);
         OAuthProvider provider = new DefaultOAuthProvider(request_token_url, access_token_url, authorize_token_url);
         
@@ -105,7 +105,7 @@ public class AuthenticationHandler {
         request.connect();
         String osmResponse = IOUtils.toString(request.getInputStream());
         
-        UserDesc ud = new UserDesc();
+        User ud = new User();
         
         Document doc = XMLUtils.parse(osmResponse);
         Element e = (Element)XMLUtils.xpath(doc, "/osm/user").iterator().next();

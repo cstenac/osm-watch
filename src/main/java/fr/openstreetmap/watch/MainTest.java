@@ -4,7 +4,7 @@ import org.apache.log4j.BasicConfigurator;
 import org.apache.log4j.Logger;
 import org.junit.Test;
 
-import fr.openstreetmap.watch.model.db.AlertDesc;
+import fr.openstreetmap.watch.model.db.Alert;
 
 public class MainTest {
     @Test
@@ -12,7 +12,7 @@ public class MainTest {
         DatabaseManager mm = new DatabaseManager();
         mm.init();
         
-        AlertDesc ad = new AlertDesc();
+        Alert ad = new Alert();
 //        ad.setUser("foo");
         
         mm.addAlert(ad);

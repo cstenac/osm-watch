@@ -21,13 +21,13 @@ import org.xml.sax.InputSource;
 import com.vividsolutions.jts.geom.Coordinate;
 import com.vividsolutions.jts.geom.GeometryFactory;
 
-import fr.openstreetmap.watch.XMLUtils;
-import fr.openstreetmap.watch.XMLUtils.ElementIterable;
 import fr.openstreetmap.watch.model.ChangesetDescriptor;
 import fr.openstreetmap.watch.model.NodeChange;
 import fr.openstreetmap.watch.model.NodeDescriptor;
 import fr.openstreetmap.watch.model.WayChange;
 import fr.openstreetmap.watch.model.WayDescriptor;
+import fr.openstreetmap.watch.util.XMLUtils;
+import fr.openstreetmap.watch.util.XMLUtils.ElementIterable;
 
 
 public class AugmentedDiffParser {
