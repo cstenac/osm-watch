@@ -1,6 +1,12 @@
 <ivy-module version="2.0">
     <info organisation="fr.openstreetmap" module="osm-watch"/>
-    <dependencies>
+
+    <configurations>
+      <conf name="core" />
+      <conf name="standalone" extends="core" />
+    </configurations>
+
+    <dependencies defaultconfmapping="core->default">
         <dependency org="log4j" name="log4j" rev="1.2.15">
           <exclude org="com.sun.jdmk"/>
            <exclude org="com.sun.jmx"/>
@@ -10,9 +16,9 @@
         <dependency org="commons-lang" name="commons-lang" rev="2.0"/>
         <dependency org="commons-io" name="commons-io" rev="2.0"/>
         <dependency org="com.google.guava" name="guava" rev="r09"/>
-
-
+        
         <!-- Database persistency -->
+
         <dependency org="org.hibernate" name="hibernate-entitymanager" rev="3.5.0-Final"/>
         <dependency org="org.hibernate" name="hibernate-core" rev="3.5.0-Final"/>
         <dependency org="org.hibernate" name="hibernate-validator" rev="4.2.0.Final"/>
@@ -23,10 +29,9 @@
         </dependency>
         <dependency org="geronimo-spec" name="geronimo-spec-jta" rev="1.0.1B-rc4"/>
         <dependency org="org.xerial" name="sqlite-jdbc" rev="3.7.2"/>
-        
 
         <!-- OSM OAuth -->
-        <dependency org="oauth.signpost" name="oauth-signpost" rev="1.2.1.2" />       
+        <dependency org="oauth.signpost" name="signpost-core" rev="1.2.1.2"/>
         <dependency org="commons-codec" name="commons-codec" rev="1.6" />
 
         <!-- Web frontend -->
@@ -37,9 +42,15 @@
         <dependency org="org.springframework" name="spring-webmvc" rev="3.1.2.RELEASE" />
         <dependency org="javax.servlet" name="jstl" rev="1.2" />
         <dependency org="taglibs" name="standard" rev="1.1.2" />
-        
         <!-- Tests -->
         <dependency org="junit" name="junit" rev="4.8.1"/>
+
+        <!-- Front -->
+        <dependency org="org.eclipse.jetty" name="jetty-server" rev="8.1.5.v20120716" conf="standalone->default">
+          <exclude org="org.eclipse.jetty.orbit" />
+          <exclude org="javax.servlet" />
+        </dependency>
+        <dependency org="org.eclipse.jetty" name="jetty-webapp" rev="8.1.5.v20120716" conf="standalone->default"/>
 
     </dependencies>
 </ivy-module>

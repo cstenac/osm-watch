@@ -1,11 +1,16 @@
-<project xmlns:ivy="antlib:org.apache.ivy.ant" name="osm-watch" default="jar">
+<project xmlns:ivy="antlib:org.apache.ivy.ant" name="osm-watch" default="war">
     <property name="ivy.install.version" value="2.0.0-beta1"/>
     <property name="ivy.jar.dir" value="${basedir}/ivy"/>
     <property name="ivy.jar.file" value="${ivy.jar.dir}/ivy.jar"/>
 
     <property name="build.dir" value="build"/>
     <property name="lib.dir" value="lib"/>
+    <property name="clib.dir" value="lib/core"/>
+    <property name="dist.dir" value="dist"/>
     <property name="src.dir" value="src"/>
+    <property name="build.war.tmp" value="build/war-tmp"/>
+    <property name="war.file" value="osm-watch.war" />
+    <property name="jar.file" value="osm-watch-standalone.jar" />
 
     <target name="download-ivy" unless="skip.download">
         <mkdir dir="${ivy.jar.dir}"/>
@@ -20,20 +25,40 @@
     </target>
 
     <target name="resolve"  depends="install-ivy" description="--> retrieve dependencies with ivy">
-        <ivy:retrieve />
+        <ivy:retrieve pattern="${lib.dir}/[conf]/[artifact]-[revision].[ext]" />
     </target>
 
     <path id="lib.path.id">
-        <fileset dir="${lib.dir}" />
-	</path>
+        <fileset dir="${clib.dir}" />
+  	</path>
 
     <target name="compile" depends="resolve">
-        <mkdir dir="${build.dir}" />
-	    <javac srcdir="${src.dir}" destdir="${build.dir}" classpathref="lib.path.id" />
+        <mkdir dir="${build.dir}/classes" />
+	    <javac srcdir="${src.dir}" destdir="${build.dir}/classes" classpathref="lib.path.id" />
     </target>
 
-    <target name="jar" depends="compile">
+    <target name="war" depends="compile">
+      <delete dir="${build.war.tmp}" />
+      <mkdir dir="${build.war.tmp}" />
+      <copy todir="${build.war.tmp}">
+        <fileset dir="src/main/webapp" />
+      </copy>
+      <mkdir dir="${build.war.tmp}/WEB-INF/lib" />
 
+      <copy todir="${build.war.tmp}/WEB-INF/lib">
+        <fileset dir="${clib.dir}" />
+      </copy>
+
+      <copy todir="${build.war.tmp}/WEB-INF/classes">
+        <fileset dir="${build.dir}/classes" />
+      </copy>
+
+      <mkdir dir="${dist.dir}" />
+      <war destfile="${dist.dir}/${war.file}" basedir="${build.war.tmp}" />
+    </target>
+
+    <!-- Big jar with everything -->
+    <target name="jar" depends="war">
     </target>
 
 </project>
