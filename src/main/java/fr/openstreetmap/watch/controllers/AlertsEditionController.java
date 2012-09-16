@@ -1,6 +1,10 @@
 package fr.openstreetmap.watch.controllers;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -45,10 +49,20 @@ public class AlertsEditionController {
          JSONWriter wr = new JSONWriter(resp.getWriter());
          try {
 			wr.object().key("alerts").array();
-			for (Alert ad : ud.getAlerts()) {
+			List<Alert> la = new ArrayList<Alert>();
+			la.addAll(ud.getAlerts());
+			Collections.sort(la, new Comparator<Alert>() {
+				@Override
+				public int compare(Alert arg0, Alert arg1) {
+					return (int)(arg0.getCreationTimestamp() - arg1.getCreationTimestamp());
+				}
+			});
+			for (Alert ad : la) {
 				wr.object();
 				if (ad.getPolygonWKT() != null) wr.key("polygon").value(ad.getPolygonWKT());
 				if (ad.getWatchedTags() != null) wr.key("tags").value(ad.getWatchedTags());
+				wr.key("creation_timestamp").value(ad.getCreationTimestamp());
+				wr.key("name").value(ad.getName());
 				wr.key("key").value(ad.getUniqueKey());
 				wr.endObject();
 			}
@@ -64,6 +78,7 @@ public class AlertsEditionController {
     @RequestMapping(value="/api/new_alert")
     public void newAlert(@RequestParam("tags") String tags, 
     					@RequestParam("wkt") String wkt,
+    					@RequestParam("name") String name,
     					HttpServletRequest req, HttpServletResponse resp) throws IOException {
         User ud = AuthenticationHandler.verityAuth(req, dbManager);
         if (ud == null) {
@@ -78,6 +93,7 @@ public class AlertsEditionController {
         if (tags != null && tags.length() > 0) {
             ad.setWatchedTags(tags);
         }
+        ad.setName(name);
         ad.setUniqueKey(SecretKeyGenerator.generate());
         
         dbManager.getEM().getTransaction().begin();

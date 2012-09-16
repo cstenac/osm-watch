@@ -46,6 +46,10 @@
             <div id="map"></div>
             <form>
                 <table>
+                   <tr>
+                        <td>Name of the alert</td>
+                        <td><input name="name" id="name_input"/></td>
+                    </tr>
                     <tr>
                         <td>Watched tags (comma-separated, empty for all tags)</td>
                         <td><input name="tags" id="tags_input" /></td>

@@ -51,6 +51,18 @@ public class Alert {
 	public void setAlertMatches(Set<AlertMatch> alertMatches) {
 		this.alertMatches = alertMatches;
 	}
+	public String getName() {
+		return name;
+	}
+	public void setName(String name) {
+		this.name = name;
+	}
+	public long getCreationTimestamp() {
+		return creationTimestamp;
+	}
+	public void setCreationTimestamp(long creationTimestamp) {
+		this.creationTimestamp = creationTimestamp;
+	}
 
 
 	@Id
@@ -63,6 +75,8 @@ public class Alert {
     @OneToMany(mappedBy="alert", fetch= FetchType.LAZY)
     private Set<AlertMatch> alertMatches;
     
+    private long creationTimestamp = System.currentTimeMillis();
+    private String name;
     private String uniqueKey;
     private String watchedTags;
     private String polygonWKT;

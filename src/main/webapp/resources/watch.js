@@ -2,10 +2,14 @@
 
 var map = undefined;
 
-function newAlert() {
+function openNewAlertBox() {
 	$("#add_alert_box").lightbox_me({
 		centered:true,
 		onLoad: function() {
+			
+			$("#tags_input").val("");
+			$("#polygon_input").val("");
+			$("#name_input").val("My alert " + new Date().getTime());
 
 		    var mapnikLayer = new L.TileLayer('http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {                                                                                                                    
 		        maxZoom: 18,                                                                                                                                                                                       
@@ -77,8 +81,11 @@ function reloadAlertsList() {
 	$.getJSON("api/list_alerts", function(data) {
 		var html = "<table>";
 		
+		html += "<tr><th>Created</th><th>Alert name</th><th>Watched tags</th><th>Link</th></tr>";
 		for (var i in data.alerts) {
-			html += "<tr><td>";
+			html += "<tr>";
+			html += "<td>" + new Date(data.alerts[i].creation_timestamp) + "</td>";
+			html += "<td>" + data.alerts[i].name + "</td><td>";
 			if (data.alerts[i].tags == null) {
 				html += "all tags";
 			} else {
@@ -94,7 +101,7 @@ function reloadAlertsList() {
 
 $(document).ready(function() {
 	$("#new_alert_button").click(function(e) {
-		newAlert();
+		openNewAlertBox();
 	});
 	
 	reloadAlertsList();
@@ -102,8 +109,9 @@ $(document).ready(function() {
 	$("#add_alert_button").click(function(e) {
 		wkt = $("#polygon_input").val();
 		tags = $("#tags_input").val();
+		name = $("#name_input").val();
 		
-		var url = "api/new_alert?wkt=" + wkt + "&tags=" + tags;
+		var url = "api/new_alert?wkt=" + wkt + "&tags=" + tags + "&name=" + name;
 		console.log("Sending alert to " + url);
 		$.ajax({url: url, dataType: "json", success: function(json) {
 			console.log("Alert added");

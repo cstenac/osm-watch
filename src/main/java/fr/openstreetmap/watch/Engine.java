@@ -82,10 +82,10 @@ public class Engine {
 					} else {
 						MatchDescriptor md = sm.alert.tagsFilter.matches(sm);
 						if (md.matches) {
-							logger.info("Tags criterion also matches");
+							logger.info("   Tags criterion also matches");
 							emitMatch(sm);
 						} else {
-							logger.info("Tags criterion does not match");
+							logger.info("   Tags criterion does not match");
 						}
 					}
 				}

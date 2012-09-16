@@ -48,7 +48,7 @@ public class AuthenticationStuffController {
         try {
             System.out.println("Processing OAuth callback");
             User ud = AuthenticationHandler.processAuthReturn(dbManager, req, resp);
-            return "redirect:home";
+            return "home";
             //resp.addHeader("Location", AuthenticationHandler.afterLoginUrl);
         } catch (Throwable e) {
             logger.error("Failed to authenticate", e); 

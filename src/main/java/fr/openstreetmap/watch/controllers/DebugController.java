@@ -30,6 +30,12 @@ public class DebugController {
     public void setEngine(Engine engine) {
         this.engine = engine;
     }
+    
+    private LastAugmentedDownloader lad;
+    @Autowired
+    public void setLastAugmentedDownloader(LastAugmentedDownloader lad) {
+    	this.lad = lad;
+    }
 
     @RequestMapping(value="/debug/send_augmented_diff")
     public void newAlert(String file, HttpServletRequest req, HttpServletResponse resp) throws IOException {
@@ -45,8 +51,6 @@ public class DebugController {
     @RequestMapping(value="/debug/next_augmented_diff")
     public void nextAugmentedDiff(HttpServletResponse resp) throws IOException {
         try {
-        	LastAugmentedDownloader lad = new LastAugmentedDownloader();
-        	lad.setEngine(engine);
         	lad.run();
         } catch (Exception e) {
             logger.error("Failed", e);

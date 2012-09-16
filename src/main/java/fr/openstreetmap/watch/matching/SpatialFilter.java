@@ -56,7 +56,7 @@ public class SpatialFilter {
      * Get the list of alerts that match this changeset on the spatial criteria.
      */
     public Collection<SpatialMatch> getMatches(ChangesetDescriptor changeset) {
-        logger.info("Checking match against " + bboxTree.size() + " in tree and " + unfilteredAlerts.size() + " unfiltered");
+//        logger.info("Checking match against " + bboxTree.size() + " in tree and " + unfilteredAlerts.size() + " unfiltered");
         rwLock.readLock().lock();
         try {
             Map<Long, SpatialMatch> ret = new HashMap<Long, SpatialMatch>();
@@ -116,7 +116,7 @@ public class SpatialFilter {
                 
                 for (Object o : bboxTree.query(nd.after.line.getEnvelopeInternal())) {
                     RuntimeAlert a = (RuntimeAlert)o;
-                    logger.info("cway " + nd.after.line);
+//                    logger.info("cway " + nd.after.line);
                     if (nd.after.line.intersects(a.polygonFilter)) {
 //                        logger.info("INTERSECTS " + nd.after.line);
                         getSpatialMatch(a, ret).matchingChangedWays.add(nd);
