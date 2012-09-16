@@ -2,7 +2,9 @@
 lib/
 build/
 ivy/
+dist/
 # Eclipse stuff
 bin/
 .classpath
 .project
+.settings
