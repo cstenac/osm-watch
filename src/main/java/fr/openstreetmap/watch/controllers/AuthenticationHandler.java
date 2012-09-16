@@ -23,6 +23,7 @@ import org.apache.log4j.Logger;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
+import fr.openstreetmap.watch.ApplicationConfigurator;
 import fr.openstreetmap.watch.DatabaseManager;
 import fr.openstreetmap.watch.model.db.User;
 import fr.openstreetmap.watch.model.db.UserSession;
@@ -81,13 +82,15 @@ public class AuthenticationHandler {
 		OAuthConsumer consumer = new DefaultOAuthConsumer(consumerKey, consumerSecret);
 		OAuthProvider provider = new DefaultOAuthProvider(request_token_url, access_token_url, authorize_token_url);
 		
-		Enumeration<String> e = req.getHeaderNames();
-		while (e.hasMoreElements()) {
-		String x = e.nextElement();
-			System.out.println("H NAME " + x + " -> " + req.getHeader(x));
-		}
+//		Enumeration<String> e = req.getHeaderNames();
+//		while (e.hasMoreElements()) {
+//		String x = e.nextElement();
+//			System.out.println("H NAME " + x + " -> " + req.getHeader(x));
+//		}
 
-		String url = req.getHeader("referer") + "auth_callback";// req.getRequestURL().toString().replace("authenticate", "auth_callback");
+//		String url = req.getHeader("referer") + "auth_callback";// req.getRequestURL().toString().replace("authenticate", "auth_callback");
+		String url = ApplicationConfigurator.getBaseURL() + "/auth_callback";// req.getRequestURL().toString().replace("authenticate", "auth_callback");
+
 		System.out.println("********* WANT TO SEND TO "+ url);
 		String authUrl = provider.retrieveRequestToken(consumer, url);
 		//req.getRequestURL().toString().replace("authenticate", ""));//callbackUrl);

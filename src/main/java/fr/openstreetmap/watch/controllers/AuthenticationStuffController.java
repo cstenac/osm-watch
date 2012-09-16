@@ -12,6 +12,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 
+import fr.openstreetmap.watch.ApplicationConfigurator;
 import fr.openstreetmap.watch.DatabaseManager;
 import fr.openstreetmap.watch.model.db.User;
 
@@ -39,21 +40,20 @@ public class AuthenticationStuffController {
     }
 
     @RequestMapping(value="/auth_callback")
-    public String authCallback(HttpServletRequest req, HttpServletResponse resp) throws IOException{
+    public void authCallback(HttpServletRequest req, HttpServletResponse resp) throws IOException{
         System.out.println("oauth callback");
         if (AuthenticationHandler.verityAuth(req, dbManager) != null) {
             resp.sendError(400, "Already authenticated");
-            return "home";
+            return;
         }
         try {
             System.out.println("Processing OAuth callback");
             User ud = AuthenticationHandler.processAuthReturn(dbManager, req, resp);
-            return "redirect:home";
-            //resp.addHeader("Location", AuthenticationHandler.afterLoginUrl);
+            resp.setStatus(302);
+            resp.addHeader("Location", ApplicationConfigurator.getBaseURL());
         } catch (Throwable e) {
             logger.error("Failed to authenticate", e); 
             resp.sendError(401, "Failed to authenticate");
-            return "home";
         }
     }
 
