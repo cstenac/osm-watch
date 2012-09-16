@@ -76,7 +76,7 @@ public class LastAugmentedDownloader {
 		URL u = new URL(url);
 
 		String xml = null;
-		for (int i = 0; i < 3; i++) {
+		for (int i = 0; i < 8; i++) {
 			try {
 				HttpURLConnection huc = (HttpURLConnection)u.openConnection();
 				xml = IOUtils.toString(new GZIPInputStream(huc.getInputStream()));
@@ -87,7 +87,7 @@ public class LastAugmentedDownloader {
 		}
 		if (xml == null) {
 			logger.error("Failed to download " + url);
-			return;
+			throw new Exception("Failed to download " + url);
 		}
 		logger.info("Handling " + url);
 		engine.handleAugmentedDiff(xml);
