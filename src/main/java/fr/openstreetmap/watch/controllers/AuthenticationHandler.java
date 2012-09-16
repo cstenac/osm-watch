@@ -3,6 +3,7 @@ package fr.openstreetmap.watch.controllers;
 import java.io.IOException;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -32,8 +33,8 @@ public class AuthenticationHandler {
 	static final String access_token_url = "http://www.openstreetmap.org/oauth/access_token"     ;                                                                                                                          
 	static final String authorize_token_url = "http://www.openstreetmap.org/oauth/authorize";
 
-	static final String callbackUrl = "http://localhost:8080/osm-watch/auth_callback";
-	static final String afterLoginUrl = "http://localhost:8080/osm-watch/";
+//	static final String callbackUrl = "http://localhost:8080/osm-watch/auth_callback";
+//	static final String afterLoginUrl = "http://localhost:8080/osm-watch/";
 
 	static final String consumerKey = "A0LiKR5qp3I01aO6SWUbvo2xlAnBimQaaKwTL6V0";
 	static final String consumerSecret = "mcPHW4JDYQgek4xLMiwyAfWKGC2a07azTbMTQIUu";
@@ -79,6 +80,12 @@ public class AuthenticationHandler {
 	public static void authenticate(HttpServletRequest req, HttpServletResponse resp) throws Exception {
 		OAuthConsumer consumer = new DefaultOAuthConsumer(consumerKey, consumerSecret);
 		OAuthProvider provider = new DefaultOAuthProvider(request_token_url, access_token_url, authorize_token_url);
+		
+		Enumeration<String> e = req.getHeaderNames();
+		while (e.hasMoreElements()) {
+		String x = e.nextElement();
+			System.out.println("H NAME " + x + " -> " + req.getHeader(x));
+		}
 
 		String url = req.getRequestURL().toString().replace("authenticate", "auth_callback");
 		System.out.println("********* WANT TO SEND TO "+ url);
