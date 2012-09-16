@@ -87,7 +87,7 @@ public class AuthenticationHandler {
 			System.out.println("H NAME " + x + " -> " + req.getHeader(x));
 		}
 
-		String url = req.getRequestURL().toString().replace("authenticate", "auth_callback");
+		String url = req.getHeader("referer") + "auth_callback";// req.getRequestURL().toString().replace("authenticate", "auth_callback");
 		System.out.println("********* WANT TO SEND TO "+ url);
 		String authUrl = provider.retrieveRequestToken(consumer, url);
 		//req.getRequestURL().toString().replace("authenticate", ""));//callbackUrl);
