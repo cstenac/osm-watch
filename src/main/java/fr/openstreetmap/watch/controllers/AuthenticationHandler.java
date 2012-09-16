@@ -47,14 +47,18 @@ public class AuthenticationHandler {
 		}
 		return ret;
 	}
-
+	
 	public static User verityAuth(HttpServletRequest req, DatabaseManager dbManager) {
+		return AuthenticationHandler.verityAuth(req, dbManager, true);
+	}
+	
+	public static User verityAuth(HttpServletRequest req, DatabaseManager dbManager, boolean doTransaction) {
 		Map<String, String> map = parseCookies(req);
 		String cookieAT = map.get("access_token");
 		if (cookieAT == null) {
 			return null; // Not authenticated at all
 		}
-		dbManager.getEM().getTransaction().begin();
+		if (doTransaction) dbManager.begin();
 		try {
 			Query q = dbManager.getEM().createQuery ("SELECT x FROM User x INNER JOIN x.sessions sess WHERE sess.accessToken= ?1");
 			q.setParameter(1, cookieAT);
@@ -68,7 +72,7 @@ public class AuthenticationHandler {
 			System.out.println("****** VERIFY AUTH, FOUND " + l.get(0) + " " + u.getAlerts());//.getAlerts().size());
 			return l.get(0);
 		} finally {
-			dbManager.getEM().getTransaction().rollback();
+			if (doTransaction) dbManager.rollback();
 		}
 	}
 

@@ -74,12 +74,12 @@ public class RSSFeedController {
 			.entity("channel");
 
 			sxw.entity("title").text("OSM Watch alert: " + a.getName()).endEntity();
-
+			
 			for (AlertMatch am : a.getAlertMatches()) {
 				sxw.entity("item");
 				sxw.entity("title").text("Changeset " + am.getChangesetId()).endEntity();
 				sxw.entity("link").text("http://www.openstreetmap.org/browse/changeset/" + am.getChangesetId()).endEntity();
-				sxw.entity("description").text("Matched on " + new Date(am.getMatchTimestamp())).endEntity();
+				sxw.entity("description").text("Matched on " + new Date(am.getMatchTimestamp()) + am.getReason()).endEntity();
 				sxw.endEntity();
 				/*            	 <item>
                  <title>Actualité N°1</title>

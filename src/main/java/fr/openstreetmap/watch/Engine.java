@@ -78,12 +78,15 @@ public class Engine {
 				for (SpatialMatch sm : spatialMatches) {
 					sm.cd = changeset;
 					if (sm.alert.tagsFilter == null) {
-						emitMatch(sm);
+						MatchDescriptor md = new MatchDescriptor(sm);
+						md.reasons.add("No tags filtering");
+						logger.info("   Tags unfiltered");
+						emitMatch(md);
 					} else {
 						MatchDescriptor md = sm.alert.tagsFilter.matches(sm);
 						if (md.matches) {
 							logger.info("   Tags criterion also matches");
-							emitMatch(sm);
+							emitMatch(md);
 						} else {
 							logger.info("   Tags criterion does not match");
 						}
@@ -96,12 +99,19 @@ public class Engine {
 		}
 	}
 
-	private void emitMatch(SpatialMatch sm) {
+	private void emitMatch(MatchDescriptor md) {
+		logger.info("Recordig match of alert " + md.sm.alert.desc.getId() + " by changeset " + md.sm.cd.id);
 		AlertMatch am = new AlertMatch();
-		am.setAlert(sm.alert.desc);
+		am.setAlert(md.sm.alert.desc);
 		am.setMatchTimestamp(System.currentTimeMillis());
-		am.setChangesetId(sm.cd.id);
-		am.setReason("It matches");
+		am.setChangesetId(md.sm.cd.id);
+		StringBuilder sb = new StringBuilder();
+		sb.append("<p>Matches because</p><ul>");
+		for (String reason: md.reasons) {
+			sb.append("<li>" + reason + "</li>");
+		}
+		sb.append("</ul>");
+		am.setReason(sb.toString());
 		dbManager.getEM().persist(am);
 	}
 
