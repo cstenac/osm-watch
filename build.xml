@@ -52,8 +52,12 @@
         <fileset dir="${build.dir}/classes" />
       </copy>
       <copy todir="${build.war.tmp}/WEB-INF/classes/META-INF">
-        <fileset dir="src/META-INF" />
+        <fileset dir="src/main/java/META-INF" />
       </copy>
+      <copy todir="${build.war.tmp}/WEB-INF/classes">
+        <fileset file="src/main/java/log4j.properties" />
+      </copy>
+
 
 
 

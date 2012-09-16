@@ -153,7 +153,9 @@ public class AuthenticationHandler {
 		dbManager.getEM().persist(us);
 		dbManager.getEM().getTransaction().commit();
 
-		resp.addCookie(new Cookie("access_token", us.getAccessToken()));
+		Cookie cookie = new Cookie("access_token", us.getAccessToken());
+		cookie.setPath("/");
+		resp.addCookie(cookie);
 		return user;
 	}
 

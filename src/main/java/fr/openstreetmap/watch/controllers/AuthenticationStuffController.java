@@ -49,8 +49,11 @@ public class AuthenticationStuffController {
         try {
             System.out.println("Processing OAuth callback");
             User ud = AuthenticationHandler.processAuthReturn(dbManager, req, resp);
-            resp.setStatus(302);
-            resp.addHeader("Location", ApplicationConfigurator.getBaseURL());
+	    System.out.println("NOW AUTHENTICATED !");
+            resp.setStatus(200);
+//            resp.addHeader("Location", ApplicationConfigurator.getBaseURL());
+	    resp.setContentType("text/html");
+	    resp.getWriter().write("<html><head><meta http-equiv=\"refresh\" content=\"0; URL=" +  ApplicationConfigurator.getBaseURL() + "/\" /></head></html>");
         } catch (Throwable e) {
             logger.error("Failed to authenticate", e); 
             resp.sendError(401, "Failed to authenticate");
