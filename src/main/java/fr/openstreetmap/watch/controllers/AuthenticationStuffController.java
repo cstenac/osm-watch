@@ -47,21 +47,7 @@ public class AuthenticationStuffController {
         }
         try {
             System.out.println("Processing OAuth callback");
-            User ud = AuthenticationHandler.processAuthReturn(req, resp);
-
-            /* Store the uid in the DB and in a cookie */
-            resp.addCookie(new Cookie("access_token", ud.getAccessToken()));
-            dbManager.getEM().getTransaction().begin();
-/*            Query q = dbManager.getEM().createQuery("DELETE FROM UserDesc where osmId=?1");
-            q.setParameter(1, ud.getOsmId());
-            q.executeUpdate();*/
-            dbManager.getEM().merge(ud);
-            /*getTransaction().commit();
-            dbManager.getEM().getTransaction().begin();
-            dbManager.getEM().persist(ud);
-            */
-            dbManager.getEM().getTransaction().commit();
-
+            User ud = AuthenticationHandler.processAuthReturn(dbManager, req, resp);
             return "redirect:home";
             //resp.addHeader("Location", AuthenticationHandler.afterLoginUrl);
         } catch (Throwable e) {

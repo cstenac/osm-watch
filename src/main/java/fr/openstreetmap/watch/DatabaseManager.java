@@ -34,14 +34,14 @@ public class DatabaseManager {
     }
     
     public List<Alert> getAlerts() {
-        Query q = em.createQuery ("SELECT x FROM AlertDesc x");
+        Query q = em.createQuery ("SELECT x FROM Alert x");
         return (List<Alert>) q.getResultList ();
     }
     
     public void deleteAlert(String uniqueKey) {
         em.getTransaction().begin();
         
-        Query q = em.createQuery ("SELECT x FROM AlertDesc x WHERE x.uniqueKey = ?1");
+        Query q = em.createQuery ("SELECT x FROM Alert x WHERE x.uniqueKey = ?1");
         q.setParameter (1, uniqueKey);
         List<Alert> results = (List<Alert>) q.getResultList ();
         logger.info("Removing alert " + uniqueKey +" -> " + results.size() + " matches");
