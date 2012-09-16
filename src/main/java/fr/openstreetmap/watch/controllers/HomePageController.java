@@ -28,6 +28,12 @@ public class HomePageController {
         map.addAttribute("ud", ud);
         return "home";
     }
+    @RequestMapping(value="/home")
+    public String home2(HttpServletRequest req, ModelMap map) throws IOException {
+        User ud = AuthenticationHandler.verityAuth(req, dbManager);
+        map.addAttribute("ud", ud);
+        return "home";
+    }
     
     private static Logger logger = Logger.getLogger("osm.watch.controller");
 }

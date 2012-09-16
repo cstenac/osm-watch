@@ -41,14 +41,15 @@ public class AlertsEditionController {
 	@RequestMapping(value="/api/list_alerts")
 	public void listAlerts(HttpServletRequest req, HttpServletResponse resp) throws IOException {
 		dbManager.begin();
-		User ud = AuthenticationHandler.verityAuth(req, dbManager, false);
-		if (ud == null) {
-			resp.sendError(403, "Not authenticated");
-			return;
-		}
-		resp.setContentType("application/json");
-		JSONWriter wr = new JSONWriter(resp.getWriter());
 		try {
+			User ud = AuthenticationHandler.verityAuth(req, dbManager, false);
+			if (ud == null) {
+				resp.sendError(403, "Not authenticated");
+				return;
+			}
+			resp.setContentType("application/json");
+			JSONWriter wr = new JSONWriter(resp.getWriter());
+
 			wr.object().key("alerts").array();
 			List<Alert> la = new ArrayList<Alert>();
 			la.addAll(ud.getAlerts());

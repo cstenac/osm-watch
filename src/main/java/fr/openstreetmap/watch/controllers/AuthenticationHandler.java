@@ -47,11 +47,11 @@ public class AuthenticationHandler {
 		}
 		return ret;
 	}
-	
+
 	public static User verityAuth(HttpServletRequest req, DatabaseManager dbManager) {
 		return AuthenticationHandler.verityAuth(req, dbManager, true);
 	}
-	
+
 	public static User verityAuth(HttpServletRequest req, DatabaseManager dbManager, boolean doTransaction) {
 		Map<String, String> map = parseCookies(req);
 		String cookieAT = map.get("access_token");
@@ -80,7 +80,10 @@ public class AuthenticationHandler {
 		OAuthConsumer consumer = new DefaultOAuthConsumer(consumerKey, consumerSecret);
 		OAuthProvider provider = new DefaultOAuthProvider(request_token_url, access_token_url, authorize_token_url);
 
-		String authUrl = provider.retrieveRequestToken(consumer, callbackUrl);
+		String url = req.getRequestURL().toString().replace("authenticate", "auth_callback");
+		System.out.println("********* WANT TO SEND TO "+ url);
+		String authUrl = provider.retrieveRequestToken(consumer, url);
+		//req.getRequestURL().toString().replace("authenticate", ""));//callbackUrl);
 
 		resp.addCookie(new Cookie("request_token", consumer.getToken()));
 		resp.addCookie(new Cookie("request_token_secret", consumer.getTokenSecret()));
