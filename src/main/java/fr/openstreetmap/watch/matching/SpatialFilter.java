@@ -42,12 +42,12 @@ public class SpatialFilter {
     }
 
     private static SpatialMatch getSpatialMatch(RuntimeAlert a, Map<Long, SpatialMatch> map) {
-        if (map.containsKey(a.id)) {
-            return map.get(a.id);
+        if (map.containsKey(a.desc.getId())) {
+            return map.get(a.desc.getId());
         } else {
             SpatialMatch sm = new SpatialMatch();
             sm.alert = a;
-            map.put(a.id, sm);
+            map.put(a.desc.getId(), sm);
             return sm;
         }
     }
@@ -68,9 +68,9 @@ public class SpatialFilter {
                 Geometry geom = p.buffer(0.1);
                 for (Object o : bboxTree.query(geom.getEnvelopeInternal())) {
                     RuntimeAlert a = (RuntimeAlert)o;
-//                    logger.info("cnode " + p + " intersets box " + a.id  + " - compare it to " + a.polygonFilter);
+//                    logger.info("cnode " + p + " intersets box " + a.desc.getId()  + " - compare it to " + a.polygonFilter);
                     if (geom.intersects(a.polygonFilter)) {
-//                        logger.info("cnode " + p + " DOES MATCH !!!!! " + a.id);
+//                        logger.info("cnode " + p + " DOES MATCH !!!!! " + a.desc.getId());
                         getSpatialMatch(a, ret).matchingChangedNodes.add(nd);
                     }
                 }
@@ -108,12 +108,15 @@ public class SpatialFilter {
             /* ***************** Match the ways **************** */
 
             for (WayChange nd : changeset.changedWays.values()) {
-                if (nd.after.line == null) continue;
+                if (nd.after.line == null) {
+                	logger.info("Can't match way " + nd.after.id + ", no line");
+                	continue;
+                }
                 
                 
                 for (Object o : bboxTree.query(nd.after.line.getEnvelopeInternal())) {
                     RuntimeAlert a = (RuntimeAlert)o;
-//                    logger.info("cway " + nd.after.line);
+                    logger.info("cway " + nd.after.line);
                     if (nd.after.line.intersects(a.polygonFilter)) {
 //                        logger.info("INTERSECTS " + nd.after.line);
                         getSpatialMatch(a, ret).matchingChangedWays.add(nd);
@@ -147,7 +150,7 @@ public class SpatialFilter {
                     getSpatialMatch(a, ret).matchingDeletedWays.add(nd);
                 }
             }
-            logger.info("Matched: " + ret.size() + " alerts match this changeset");
+//            logger.info("Matched: " + ret.size() + " alerts match this changeset");
             return ret.values();
         } finally {
             rwLock.readLock().unlock();

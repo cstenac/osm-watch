@@ -1,11 +1,14 @@
 package fr.openstreetmap.watch.model.db;
 
+import java.util.Set;
+
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
 
 
 @Entity
@@ -42,12 +45,23 @@ public class Alert {
         this.user = user;
     }
 
-    @Id
+    public Set<AlertMatch> getAlertMatches() {
+		return alertMatches;
+	}
+	public void setAlertMatches(Set<AlertMatch> alertMatches) {
+		this.alertMatches = alertMatches;
+	}
+
+
+	@Id
     @GeneratedValue(strategy=GenerationType.AUTO)
     private long id;
 
     @ManyToOne(fetch=FetchType.LAZY)
     private User user;
+    
+    @OneToMany(mappedBy="alert", fetch= FetchType.LAZY)
+    private Set<AlertMatch> alertMatches;
     
     private String uniqueKey;
     private String watchedTags;

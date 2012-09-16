@@ -16,6 +16,7 @@ import fr.openstreetmap.watch.DatabaseManager;
 import fr.openstreetmap.watch.Engine;
 import fr.openstreetmap.watch.model.db.Alert;
 import fr.openstreetmap.watch.model.db.User;
+import fr.openstreetmap.watch.parsers.LastAugmentedDownloader;
 
 @Controller
 public class DebugController {
@@ -41,13 +42,25 @@ public class DebugController {
         }
     }
     
-    @RequestMapping(value="/debug/add_alert")
+    @RequestMapping(value="/debug/next_augmented_diff")
+    public void nextAugmentedDiff(HttpServletResponse resp) throws IOException {
+        try {
+        	LastAugmentedDownloader lad = new LastAugmentedDownloader();
+        	lad.setEngine(engine);
+        	lad.run();
+        } catch (Exception e) {
+            logger.error("Failed", e);
+            resp.sendError(500, "Failed: " + e.getMessage());
+        }
+    }
+    
+    @RequestMapping(value="/debug/add_alert_to_filter")
     public void newAlert(String uid, String tags, String polygons, HttpServletResponse resp) throws IOException {
         Alert ad = new Alert();
         ad.setPolygonWKT(polygons);
         ad.setWatchedTags(tags);
         try {
-            engine.addAlert(ad);
+            engine.addAlertToSpatialFilter(ad);
         } catch (Exception e) {
             logger.error("Failed", e);
             resp.sendError(500, "Failed: " + e.getMessage());

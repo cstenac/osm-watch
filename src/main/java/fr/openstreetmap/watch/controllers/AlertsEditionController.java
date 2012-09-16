@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import fr.openstreetmap.watch.DatabaseManager;
+import fr.openstreetmap.watch.Engine;
 import fr.openstreetmap.watch.model.db.Alert;
 import fr.openstreetmap.watch.model.db.User;
 import fr.openstreetmap.watch.util.SecretKeyGenerator;
@@ -25,6 +26,12 @@ public class AlertsEditionController {
     @Autowired
     public void setDatabaseManager(DatabaseManager dbManager) {
         this.dbManager = dbManager;
+    }
+    
+    private Engine engine;
+    @Autowired
+    public void setEngine(Engine engine) {
+        this.engine = engine;
     }
     
     @RequestMapping(value="/api/list_alerts")
@@ -81,7 +88,8 @@ public class AlertsEditionController {
             
             resp.setContentType("application/json");
             resp.getWriter().write("{\"ok\": \"1\"}");
-
+            
+           
         } catch (Exception e) {
         	logger.error("Failed to create alert", e);
         	dbManager.getEM().getTransaction().rollback();
@@ -89,6 +97,15 @@ public class AlertsEditionController {
             resp.setContentType("application/json");
             resp.getWriter().write("{\"ok\": \"0\"}");
         }
+        try {
+        	engine.addAlertToSpatialFilter(ad);
+        } catch (Exception e) {
+        	logger.error("Failed to add alert to engine", e);
+        	resp.setStatus(500);
+            resp.setContentType("application/json");
+            resp.getWriter().write("{\"ok\": \"0\"}");
+        }
+
     }
     
     private static Logger logger = Logger.getLogger("osm.watch.controller");

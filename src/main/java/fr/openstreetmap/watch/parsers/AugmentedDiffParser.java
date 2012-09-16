@@ -56,7 +56,7 @@ public class AugmentedDiffParser {
         Map<Long, NodeDescriptor> maybeDeletedNodes = new HashMap<Long, NodeDescriptor>();
         Map<Long, NodeDescriptor> maybeNewNodes = new HashMap<Long, NodeDescriptor>();
         {
-            XPathExpression expr = xpath.compile("/osm/delete/node");
+            XPathExpression expr = xpath.compile("/osmAugmentedDiff/erase/node");
             NodeList nl = (NodeList)expr.evaluate(doc, XPathConstants.NODESET);
             for (Element e : new XMLUtils.ElementIterable(nl)) {
                 NodeDescriptor nd = parseNode(e);
@@ -65,7 +65,7 @@ public class AugmentedDiffParser {
         }
 
         {
-            XPathExpression expr = xpath.compile("/osm/keep/node");
+            XPathExpression expr = xpath.compile("/osmAugmentedDiff/keep/node");
             NodeList nl = (NodeList)expr.evaluate(doc, XPathConstants.NODESET);
             for (Element e : new XMLUtils.ElementIterable(nl)) {
                 NodeDescriptor nd = parseNode(e);
@@ -73,7 +73,7 @@ public class AugmentedDiffParser {
             }
         }
         {
-            XPathExpression expr = xpath.compile("/osm/insert/node");
+            XPathExpression expr = xpath.compile("/osmAugmentedDiff/insert/node");
             NodeList nl = (NodeList)expr.evaluate(doc, XPathConstants.NODESET);
             for (Element e : new XMLUtils.ElementIterable(nl)) {
                 NodeDescriptor nd = parseNode(e);
@@ -101,7 +101,7 @@ public class AugmentedDiffParser {
         Map<Long, WayDescriptor> maybeDeletedWays = new HashMap<Long, WayDescriptor>();
         Map<Long, WayDescriptor> maybeNewWays = new HashMap<Long, WayDescriptor>();
         {
-            XPathExpression expr = xpath.compile("/osm/delete/way");
+            XPathExpression expr = xpath.compile("/osmAugmentedDiff/erase/way");
             NodeList nl = (NodeList)expr.evaluate(doc, XPathConstants.NODESET);
             for (Element e : new XMLUtils.ElementIterable(nl)) {
                 WayDescriptor wd = parseWay(e, true);
@@ -109,7 +109,7 @@ public class AugmentedDiffParser {
             }
         }
         {
-            XPathExpression expr = xpath.compile("/osm/keep/way");
+            XPathExpression expr = xpath.compile("/osmAugmentedDiff/keep/way");
             NodeList nl = (NodeList)expr.evaluate(doc, XPathConstants.NODESET);
             for (Element e : new XMLUtils.ElementIterable(nl)) {
                 WayDescriptor wd = parseWay(e, true);
@@ -117,7 +117,7 @@ public class AugmentedDiffParser {
             }
         }
         {
-            XPathExpression expr = xpath.compile("/osm/insert/way");
+            XPathExpression expr = xpath.compile("/osmAugmentedDiff/insert/way");
             NodeList nl = (NodeList)expr.evaluate(doc, XPathConstants.NODESET);
             for (Element e : new XMLUtils.ElementIterable(nl)) {
                 WayDescriptor wd = parseWay(e, true);

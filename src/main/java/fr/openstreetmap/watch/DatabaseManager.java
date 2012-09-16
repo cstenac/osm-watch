@@ -23,6 +23,16 @@ public class DatabaseManager {
         em = emf.createEntityManager();
     }
     
+    public void begin() {
+    	em.getTransaction().begin();
+    }
+    public void commit() {
+    	em.getTransaction().commit();
+    }
+    public void rollback() {
+    	em.getTransaction().rollback();
+    }
+    
     public void addAlert(Alert ad) {
         em.getTransaction().begin();
         em.persist(ad);

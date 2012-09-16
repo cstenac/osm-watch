@@ -12,8 +12,8 @@ public class ApplicationConfigurator implements ApplicationContextAware {
     @Override
     public void setApplicationContext(ApplicationContext arg0) throws BeansException {
         System.out.println("******* Starting up ********");
-        Logger.getRootLogger().removeAllAppenders();
-        BasicConfigurator.configure();
+//        Logger.getRootLogger().removeAllAppenders();
+//        BasicConfigurator.configure();
     }
 
 }

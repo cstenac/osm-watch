@@ -51,6 +51,11 @@ function onDrawingEnded(e) {
 			wkt += lng + " " + lat
 		});
 		
+		wkt += ", ";
+		lng = e.poly.getLatLngs()[0].lng.toFixed(4);
+		lat = e.poly.getLatLngs()[0].lat.toFixed(4);
+		wkt += lng + " " + lat
+		
 		wkt += "))";
 		$("#polygon_input").val(wkt);
 		console.info("Setting WKT " + wkt);

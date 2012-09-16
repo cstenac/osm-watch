@@ -33,10 +33,6 @@ public class RuntimeAlert {
     
     public Alert desc;
     
-    public long id;
-	public String user;
-	public String uniqueKey;
-	
 	public TagKeysCriterion tagsFilter;
 	public Polygon polygonFilter;
 }
