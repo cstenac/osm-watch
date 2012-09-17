@@ -52,11 +52,7 @@ public class RSSFeedController {
 	@RequestMapping(value="/api/rss_feed")
 	public void newAlert(@RequestParam("key") String key, 
 			HttpServletRequest req, HttpServletResponse resp) throws IOException {
-		User ud = AuthenticationHandler.verityAuth(req, dbManager);
-		if (ud == null) {
-			resp.sendError(403, "Not authenticated");
-			return;
-		}
+
 		dbManager.begin();
 		try {
 			javax.persistence.Query q = dbManager.getEM().createQuery("SELECT x FROM Alert x where uniqueKey = ?1");
@@ -67,7 +63,6 @@ public class RSSFeedController {
 				return;
 			}
 			Alert a = aa.get(0);
-
 
 			resp.setContentType("text/xml");
 			SimpleXMLWriter sxw = new SimpleXMLWriter(resp.getWriter());
@@ -84,8 +79,15 @@ public class RSSFeedController {
 			Collections.sort(amList, new Comparator<AlertMatch>() {
                 @Override
                 public int compare(AlertMatch o1, AlertMatch o2) {
-                    long r = o1.getMatchTimestamp() - o2.getMatchTimestamp();
-                    return -(int)(r/r);
+                    if (o1.getMatchTimestamp() > o2.getMatchTimestamp()) {
+                        return -1;
+                    } else if (o1.getMatchTimestamp() < o2.getMatchTimestamp()) {
+                        return 1;
+                    } else if (o1.getId() < o2.getId()) {
+                        return 1;
+                    } else {
+                        return -1;
+                    }
                 }
 			});
 			
