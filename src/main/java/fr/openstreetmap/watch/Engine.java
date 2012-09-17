@@ -77,13 +77,13 @@ public class Engine {
 
 				for (SpatialMatch sm : spatialMatches) {
 					sm.cd = changeset;
-					if (sm.alert.tagsFilter == null) {
+					if (sm.alert.josmFilter == null) {
 						MatchDescriptor md = new MatchDescriptor(sm);
 						md.reasons.add("No tags filtering");
 						logger.info("   Tags unfiltered");
 						emitMatch(md);
 					} else {
-						MatchDescriptor md = sm.alert.tagsFilter.matches(sm);
+						MatchDescriptor md = sm.alert.josmFilter.matches(sm);
 						if (md.matches) {
 							logger.info("   Tags criterion also matches");
 							emitMatch(md);
@@ -96,6 +96,7 @@ public class Engine {
 			dbManager.commit();
 		} catch (Exception e) {
 			dbManager.rollback();
+			throw e;
 		}
 	}
 

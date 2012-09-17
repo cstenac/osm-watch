@@ -52,6 +52,7 @@ public class DebugController {
     public void nextAugmentedDiff(HttpServletResponse resp) throws IOException {
         try {
         	lad.run();
+        	logger.info("Augmented diff handling done");
         } catch (Exception e) {
             logger.error("Failed", e);
             resp.sendError(500, "Failed: " + e.getMessage());

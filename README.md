@@ -40,3 +40,11 @@ The OSC files are fetched, and processed:
 * Aggregated modifications are sent to the matchers
 
 This backend is in Java, and is API only. A frontend TBD exists to set up the alerts
+
+
+Third party code
+----------------
+
+OSM-Watch embeds some code from the JOSM project for the filtering part.
+The JOSM code is Copyright 2007 by Immanuel Scholz and others, Copyright 2008 by Petr Nejedly, and is
+used according to the terms of the GPL license

@@ -256,7 +256,11 @@ public class AugmentedDiffParser {
                 coordinates.add(new Coordinate(foundNode.lon, foundNode.lat));
             }
             if (canConstruct) {
-                nd.line = factory.createLineString(coordinates.toArray(new Coordinate[0]));
+                try {
+                    nd.line = factory.createLineString(coordinates.toArray(new Coordinate[0]));
+                } catch (IllegalArgumentException e2) {
+                    logger.error("Failed to construct line string for way " + nd.id + ": " + e2.getMessage());
+                }
             }
         }
 
