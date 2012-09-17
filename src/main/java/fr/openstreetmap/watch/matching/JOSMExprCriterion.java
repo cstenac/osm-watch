@@ -51,20 +51,20 @@ public class JOSMExprCriterion extends Criterion {
             }
         }
         for (WayDescriptor n : sm.matchingWaysWithChangedNodes) {
-            System.out.println("cnway " + n.id);
+//            System.out.println("cnway " + n.id);
             if (josmMatch.match(n)) {
-                System.out.println("cnway MATCH");
+//                System.out.println("cnway MATCH");
                 md.addWay(n, "Way with changed nodes matches expression");
             }
         }
         for (WayChange n : sm.matchingChangedWays) {
-            System.out.println("cway " + n.id);
+//            System.out.println("cway " + n.id);
             if (josmMatch.match(n.after)) {
-                System.out.println("cway MATCH");
+//                System.out.println("cway MATCH");
                 md.addWay(n.after, "Changed way matches expression AFTER");
             }
             if (josmMatch.match(n.before)) {
-                System.out.println("cway MATCH");
+//                System.out.println("cway MATCH");
                 md.addWay(n.before, "Changed way matches expression BEFORE");
             }
         }
