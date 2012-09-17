@@ -13,10 +13,8 @@
 <link rel="stylesheet" href="http://cdn.leafletjs.com/leaflet-0.4/leaflet.css" />
 <script src="http://cdn.leafletjs.com/leaflet-0.4/leaflet.js"></script>
 
-<script src="resources/draw/Map.Draw.js"></script>
-<script src="resources/draw/Control.Draw.js"></script>
-
-
+<script src="resources/lfdraw/leaflet.draw.js"></script>
+<link rel="stylesheet" href="resources/lfdraw/leaflet.draw.css" />
 
 <script src="resources/watch.js"></script>
 

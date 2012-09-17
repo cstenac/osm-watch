@@ -2,6 +2,8 @@
 
 var map = undefined;
 
+var currentlyDrawnPolygon = null;
+
 function openNewAlertBox() {
 	$("#add_alert_box").lightbox_me({
 		centered:true,
@@ -15,37 +17,39 @@ function openNewAlertBox() {
 				maxZoom: 18,                                                                                                                                                                                       
 				attribution: 'OpenStreetMap'                                                                                                                                                                       
 			});    
-
-			drawControl = new L.Control.Draw({
-				options : { position: 'bottomright' , drawMarker : false, drawPolyline: false} }
-			);
 			map = new L.Map('map', {                                                                                                                                                                               
 				center: new L.LatLng(25, 0),                                                                                                                                                                       
 				zoom:3                                                                                                                                                                                
 			});                                                                                                                                                                                                    
 			map.addLayer(mapnikLayer);
+			
+			var drawControl = new L.Control.Draw({
+			    position: 'topright',
+			    polyline: false,
+			    marker: false,
+			    circle: false,
+			    rectangle: false
+			});
 			map.addControl(drawControl);
-
-			/*
-			var geometry = new L.Polygon([]);
-				geometry.addLatLng(new L.LatLng(42, 0));
-				geometry.addLatLng(new L.LatLng(52, 0));
-				geometry.addLatLng(new L.LatLng(52, 15));
-				geometry.addLatLng(new L.LatLng(42, 15));
-			map.addLayer(geometry);
-			 */
-
-			map.on('drawend', function(e) {
+			
+			drawControl.handlers.polygon.on('activated', function() {
+				if (currentlyDrawnPolygon != null) {
+					map.removeLayer(currentlyDrawnPolygon);
+				}
+			});
+			map.on('draw:poly-created', function(e) {
 				onDrawingEnded(e);
 			});
+			
 		}
 	});
 }
 
 function onDrawingEnded(e) {
-	console.info("Drawing " + e.poly);
+	if (currentlyDrawnPolygon != null) {
+		map.removeLayer(currentlyDrawnPolygon);
+	}
 	if (L.polygon && (e.poly instanceof L.Polygon)) {
-		console.info("is a polygon");
 		var wkt = "POLYGON((";
 
 		$.each(e.poly.getLatLngs(), function(i) {
@@ -58,33 +62,26 @@ function onDrawingEnded(e) {
 		wkt += ", ";
 		lng = e.poly.getLatLngs()[0].lng.toFixed(4);
 		lat = e.poly.getLatLngs()[0].lat.toFixed(4);
-		wkt += lng + " " + lat
+		wkt += lng + " " + lat;
 
 		wkt += "))";
 		$("#polygon_input").val(wkt);
 		console.info("Setting WKT " + wkt);
 
-		map.draw.disable();
-
-		/*		
-			var geometry = new L.Polygon([]);
-		$.each(e.poly.getLatLngs(), function(i, latlng) {
-			geometry.addLatLng(new L.LatLng(latlng.lat, latlng.lng));
-		});
-		map.addLayer(geometry);
-		 */
+		currentlyDrawnPolygon = e.poly;
+		map.addLayer(currentlyDrawnPolygon);
 	}
 };
 
 function deleteAlert(key) {
-	var url = "api/delete_alert?key=" + key
+	var url = "api/delete_alert?key=" + key;
 	$.getJSON(url, function(json) {
 		reloadAlertsList();
 	});
 }
 
 function reloadAlertsList() {
-	$("alerts_list").html("<h3>Loading ...</h3>");
+	$("alerts_list").html("<h3>Loading, please wait ...</h3>");
 	$.getJSON("api/list_alerts", function(data) {
 		var html = "<table>";
 
@@ -114,8 +111,6 @@ $(document).ready(function() {
 		openNewAlertBox();
 	});
 
-	reloadAlertsList();
-
 	$("#add_alert_button").click(function(e) {
 		wkt = $("#polygon_input").val();
 		tags = $("#tags_input").val();
@@ -138,4 +133,5 @@ $(document).ready(function() {
 		e.preventDefault();
 	});
 
+	reloadAlertsList();
 });
