@@ -1,6 +1,9 @@
 package fr.openstreetmap.watch.controllers;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
 
@@ -75,11 +78,23 @@ public class RSSFeedController {
 
 			sxw.entity("title").text("OSM Watch alert: " + a.getName()).endEntity();
 			
-			for (AlertMatch am : a.getAlertMatches()) {
+			List<AlertMatch> amList = new ArrayList<AlertMatch>();
+			amList.addAll(a.getAlertMatches());
+			
+			Collections.sort(amList, new Comparator<AlertMatch>() {
+                @Override
+                public int compare(AlertMatch o1, AlertMatch o2) {
+                    long r = o1.getMatchTimestamp() - o2.getMatchTimestamp();
+                    return -(int)(r/r);
+                }
+			});
+			
+			for (AlertMatch am : amList) {
 				sxw.entity("item");
 				sxw.entity("title").text("Changeset " + am.getChangesetId()).endEntity();
 				sxw.entity("link").text("http://www.openstreetmap.org/browse/changeset/" + am.getChangesetId()).endEntity();
 				sxw.entity("description").text("Matched on " + new Date(am.getMatchTimestamp()) + am.getReason()).endEntity();
+				sxw.entity("pubDate").text(new Date(am.getMatchTimestamp()).toString()).endEntity();
 				sxw.endEntity();
 				/*            	 <item>
                  <title>Actualité N°1</title>
