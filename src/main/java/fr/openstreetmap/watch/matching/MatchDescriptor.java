@@ -18,11 +18,11 @@ public class MatchDescriptor {
 	public boolean matches;
 	
 	public void addNode(NodeDescriptor node, String why) {
-		reasons.add(why + ": node " + node.id);
+		reasons.add(why + ": node <a href=\"http://www.openstreetmap.org/browse/node/" + node.id + "\">" + node.id + "</a>");
 		matches = true;
 	}
-	public void addWay(WayDescriptor node, String why) {
-		reasons.add(why + ": way " + node.id);
+	public void addWay(WayDescriptor way, String why) {
+		reasons.add(why + ": way <a href=\"http://www.openstreetmap.org/browse/way/" + way.id + "\">" + way.id + "</a>");
 		matches = true;
 	}
 
