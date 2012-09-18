@@ -20,133 +20,151 @@ import org.springframework.web.bind.annotation.RequestParam;
 
 import fr.openstreetmap.watch.DatabaseManager;
 import fr.openstreetmap.watch.Engine;
+import fr.openstreetmap.watch.matching.RuntimeAlert;
 import fr.openstreetmap.watch.model.db.Alert;
 import fr.openstreetmap.watch.model.db.User;
 import fr.openstreetmap.watch.util.SecretKeyGenerator;
 
 @Controller
 public class AlertsEditionController {
-	private DatabaseManager dbManager;
-	@Autowired
-	public void setDatabaseManager(DatabaseManager dbManager) {
-		this.dbManager = dbManager;
-	}
+    private DatabaseManager dbManager;
+    @Autowired
+    public void setDatabaseManager(DatabaseManager dbManager) {
+        this.dbManager = dbManager;
+    }
 
-	private Engine engine;
-	@Autowired
-	public void setEngine(Engine engine) {
-		this.engine = engine;
-	}
+    private Engine engine;
+    @Autowired
+    public void setEngine(Engine engine) {
+        this.engine = engine;
+    }
 
-	@RequestMapping(value="/api/list_alerts")
-	public void listAlerts(HttpServletRequest req, HttpServletResponse resp) throws IOException {
-		dbManager.begin();
-		try {
-			User ud = AuthenticationHandler.verityAuth(req, dbManager, false);
-			if (ud == null) {
-				resp.sendError(403, "Not authenticated");
-				return;
-			}
-			resp.setContentType("application/json");
-			JSONWriter wr = new JSONWriter(resp.getWriter());
+    @RequestMapping(value="/api/list_alerts")
+    public void listAlerts(HttpServletRequest req, HttpServletResponse resp) throws IOException {
+        dbManager.begin();
+        try {
+            User ud = AuthenticationHandler.verityAuth(req, dbManager, false);
+            if (ud == null) {
+                resp.sendError(403, "Not authenticated");
+                return;
+            }
+            resp.setContentType("application/json");
+            JSONWriter wr = new JSONWriter(resp.getWriter());
 
-			wr.object().key("alerts").array();
-			List<Alert> la = new ArrayList<Alert>();
-			la.addAll(ud.getAlerts());
-			Collections.sort(la, new Comparator<Alert>() {
-				@Override
-				public int compare(Alert arg0, Alert arg1) {
-					return (int)(arg0.getCreationTimestamp() - arg1.getCreationTimestamp());
-				}
-			});
-			for (Alert ad : la) {
-				wr.object();
-				if (ad.getPolygonWKT() != null) wr.key("polygon").value(ad.getPolygonWKT());
-				if (ad.getWatchedTags() != null) wr.key("tags").value(ad.getWatchedTags());
-				wr.key("creation_timestamp").value(ad.getCreationTimestamp());
-				wr.key("name").value(ad.getName());
-				wr.key("id").value(ad.getId());
-				wr.key("key").value(ad.getUniqueKey());
-				if (ad.getAlertMatches() != null) {
-					wr.key("nb_matches").value(ad.getAlertMatches().size());
-				} else {
-					wr.key("nb_matches").value(0);
-				}
-				wr.endObject();
-			}
-			wr.endArray().endObject();
+            wr.object().key("alerts").array();
+            List<Alert> la = new ArrayList<Alert>();
+            la.addAll(ud.getAlerts());
+            Collections.sort(la, new Comparator<Alert>() {
+                @Override
+                public int compare(Alert arg0, Alert arg1) {
+                    return (int)(arg0.getCreationTimestamp() - arg1.getCreationTimestamp());
+                }
+            });
+            for (Alert ad : la) {
+                wr.object();
+                if (ad.getPolygonWKT() != null) wr.key("polygon").value(ad.getPolygonWKT());
+                if (ad.getWatchedTags() != null) wr.key("tags").value(ad.getWatchedTags());
+                wr.key("creation_timestamp").value(ad.getCreationTimestamp());
+                wr.key("name").value(ad.getName());
+                wr.key("id").value(ad.getId());
+                wr.key("key").value(ad.getUniqueKey());
+                if (ad.getAlertMatches() != null) {
+                    wr.key("nb_matches").value(ad.getAlertMatches().size());
+                } else {
+                    wr.key("nb_matches").value(0);
+                }
+                wr.endObject();
+            }
+            wr.endArray().endObject();
 
-		} catch (JSONException e) {
-			logger.error(e);
-			throw new IOException(e);
-		} finally {
-			dbManager.rollback();
-		}
+        } catch (JSONException e) {
+            logger.error(e);
+            throw new IOException(e);
+        } finally {
+            dbManager.rollback();
+        }
 
-	}
+    }
 
-	@RequestMapping(value="/api/delete_alert")
-	public void newAlert(@RequestParam("key") String key, 
-			HttpServletRequest req, HttpServletResponse resp) throws IOException {
-		User ud = AuthenticationHandler.verityAuth(req, dbManager);
-		if (ud == null) {
-			resp.sendError(403, "Not authenticated");
-			return;
-		}
-		dbManager.deleteAlert(key);
-		resp.setStatus(200);
-		resp.setContentType("application/json");
-		resp.getWriter().write("{\"ok\": \"0\"}");
-	}
+    @RequestMapping(value="/api/delete_alert")
+    public void newAlert(@RequestParam("key") String key, 
+            HttpServletRequest req, HttpServletResponse resp) throws IOException {
+        User ud = AuthenticationHandler.verityAuth(req, dbManager);
+        if (ud == null) {
+            resp.sendError(403, "Not authenticated");
+            return;
+        }
+        dbManager.deleteAlert(key);
+        resp.setStatus(200);
+        resp.setContentType("application/json");
+        resp.getWriter().write("{\"ok\": \"0\"}");
+    }
 
-	@RequestMapping(value="/api/new_alert")
-	public void newAlert(@RequestParam("tags") String tags, 
-			@RequestParam("wkt") String wkt,
-			@RequestParam("name") String name,
-			HttpServletRequest req, HttpServletResponse resp) throws IOException {
-		User ud = AuthenticationHandler.verityAuth(req, dbManager);
-		if (ud == null) {
-			resp.sendError(403, "Not authenticated");
-			return;
-		}
-		Alert ad = new Alert();
-		ad.setUser(ud);
-		if (wkt != null && wkt.length() > 0 ) {
-			ad.setPolygonWKT(wkt);
-		}
-		if (tags != null && tags.length() > 0) {
-			ad.setWatchedTags(tags);
-		}
-		ad.setName(name);
-		ad.setUniqueKey(SecretKeyGenerator.generate());
+    @RequestMapping(value="/api/new_alert")
+    public void newAlert(@RequestParam("tags") String tags, 
+            @RequestParam("wkt") String wkt,
+            @RequestParam("name") String name,
+            HttpServletRequest req, HttpServletResponse resp) throws IOException {
+        User ud = AuthenticationHandler.verityAuth(req, dbManager);
+        if (ud == null) {
+            resp.sendError(403, "Not authenticated");
+            return;
+        }
+        Alert ad = new Alert();
+        ad.setUser(ud);
+        if (wkt != null && wkt.length() > 0 ) {
+            ad.setPolygonWKT(wkt);
+        }
+        if (tags != null && tags.length() > 0) {
+            ad.setWatchedTags(tags);
+        }
+        ad.setName(name);
+        ad.setUniqueKey(SecretKeyGenerator.generate());
 
-		dbManager.getEM().getTransaction().begin();
-		try {
-			dbManager.getEM().persist(ad);
-			dbManager.getEM().flush();
-			dbManager.getEM().getTransaction().commit();
+        /* Check syntax */
+        try {
+            new RuntimeAlert(ad);
+        } catch (Exception e) {
+            logger.error("Failed to create alert, can't instantiate it", e);
+            resp.setStatus(400);
+            try {
+                new JSONWriter(resp.getWriter()).object().key("ok").value("0").key("error").value(e.getMessage()).endObject();
+            } catch (JSONException e1) {
+                //
+            }
+        }
 
-			resp.setContentType("application/json");
-			resp.getWriter().write("{\"ok\": \"1\"}");
+        dbManager.getEM().getTransaction().begin();
+        try {
+            dbManager.getEM().persist(ad);
+            dbManager.getEM().flush();
+            dbManager.getEM().getTransaction().commit();
+            engine.addAlertToSpatialFilter(ad);
+            resp.setContentType("application/json");
+            try {
+                new JSONWriter(resp.getWriter()).object().key("ok").value("1").endObject();
+            } catch (JSONException e1) {
+            }
+        } catch (Exception e) {
+            logger.error("Failed to create alert", e);
+            dbManager.getEM().getTransaction().rollback();
+            resp.setStatus(500);
+            resp.setContentType("application/json");
+            try {
+                new JSONWriter(resp.getWriter()).object().key("ok").value("0").key("error").value(e.getMessage()).endObject();
+            } catch (JSONException e1) {
+            }
+        }
+        try {
 
+        } catch (Exception e) {
+            logger.error("Failed to add alert to engine", e);
+            resp.setStatus(500);
+            resp.setContentType("application/json");
+            resp.getWriter().write("{\"ok\": \"0\"}");
+        }
 
-		} catch (Exception e) {
-			logger.error("Failed to create alert", e);
-			dbManager.getEM().getTransaction().rollback();
-			resp.setStatus(500);
-			resp.setContentType("application/json");
-			resp.getWriter().write("{\"ok\": \"0\"}");
-		}
-		try {
-			engine.addAlertToSpatialFilter(ad);
-		} catch (Exception e) {
-			logger.error("Failed to add alert to engine", e);
-			resp.setStatus(500);
-			resp.setContentType("application/json");
-			resp.getWriter().write("{\"ok\": \"0\"}");
-		}
+    }
 
-	}
-
-	private static Logger logger = Logger.getLogger("osm.watch.controller");
+    private static Logger logger = Logger.getLogger("osm.watch.controller");
 }
