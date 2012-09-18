@@ -83,7 +83,7 @@ function deleteAlert(key) {
 function reloadAlertsList() {
 	$("alerts_list").html("<h3>Loading, please wait ...</h3>");
 	$.getJSON("api/list_alerts", function(data) {
-		var html = "<table>";
+		var html = "<table class=\"alerts_list\" >";
 
 		html += "<tr><th>Created</th><th>Alert name</th><th>Watched tags</th><th>Link</th><th>Nb. matches</th><th>Remove</th></tr>";
 		for (var i in data.alerts) {
