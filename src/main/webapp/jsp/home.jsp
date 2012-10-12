@@ -18,73 +18,85 @@
 <script src="resources/lfdraw/leaflet.draw.js"></script>
 <link rel="stylesheet" href="resources/lfdraw/leaflet.draw.css" />
 
-<script src="resources/watch.js"></script>
+<link rel="stylesheet" href="resources/jqui/jquery-ui-1.9.0.custom.css" />
 
+
+<script src="resources/watch.js"></script>
 
 </head>
 
 <body>
-    <h1>OSM Watch</h1>
+    <div id="titlebar">
+        <div class="title">OSM Watch</div>
+    </div>
 
-    <c:if test="${empty ud}">
-            Please <a href="authenticate">authenticate</a> to continue.
+
+    <div class="content">
+        <c:if test="${empty ud}">
+            <div id="logged_in">
+                <a href="authenticate">Login with your OpenStreetMap account</a> to manage your alerts.
+            </div>
         </c:if>
-    <c:if test="${not empty ud}">
-            Welcome <c:out value="${ud.screenName}" />
+        <c:if test="${not empty ud}">
+            <div id="logged_in">
+                Logged in as
+                <c:out value="${ud.screenName}" />
+            </div>
 
-        <h2>Your alerts</h2>
-        <div id="alerts_list"></div>
-        
-        <p>
-        <a href="#" id="new_alert_button">New alert</a>
-        </p>
+            <h2>Your alerts</h2>
+            <p>
+                <a href="#" id="new_alert_button">Create a new alert</a>
+            </p>
+            
+            <div id="alerts_list"></div>
 
-        <div id="add_alert_box">
-            <a id="close_x" class="close sprited" href="#">close</a>
-            <form style="margin-top:10px">
-                <fieldset>
-                    <legend>Name</legend>
-                    Name of the alert: <input name="name" id="name_input" />
-                </fieldset>
 
-                <fieldset>
-                    <legend>Watch expression</legend>
-                    <div class="syntax_help">
-                        Syntax examples (JOSM compatible):
-                        <table>
-                            <tr>
-                                <td>
-                                    <ul>
-                                        <li>Match in any tag key or value: "highway", "Baker Street"</li>
-                                        <li>Tag key match: "highway=*"</li>
-                                        <li>Tag value match: "*=value"</li>
-                                        <li>Exact tag match: "highway=primary"</li>
+            <div id="add_alert_box">
+                <a id="close_x" class="close sprited" href="#">close</a>
+                <form style="margin-top: 10px">
+                    <fieldset>
+                        <legend>Name</legend>
+                        Name of the alert: <input name="name" id="name_input" />
+                    </fieldset>
 
-                                    </ul>
-                                </td>
-                                <td>
-                                    <ul>
-                                        <li>Regexp search: "source=.*oogle.*"</li>
-                                        <li>Boolean search: "expr | expr", "expr OR expr", "expr && expr", "-expr"</li>
-                                        <li>Meta match: "version:17", "tags:1-3", "type:way"</li>
-                                        <li>(ways only) nb nodes: "nodes:10-15"</li>
-                                    </ul>
-                                </td>
-                            </tr>
-                        </table>
+                    <fieldset>
+                        <legend>Watch expression</legend>
+                        <div class="syntax_help">
+                            Syntax examples (JOSM compatible):
+                            <table>
+                                <tr>
+                                    <td>
+                                        <ul>
+                                            <li>Match in any tag key or value: "highway", "Baker Street"</li>
+                                            <li>Tag key match: "highway=*"</li>
+                                            <li>Tag value match: "*=value"</li>
+                                            <li>Exact tag match: "highway=primary"</li>
 
-                    </div>
+                                        </ul>
+                                    </td>
+                                    <td>
+                                        <ul>
+                                            <li>Regexp search: "source=.*oogle.*"</li>
+                                            <li>Boolean search: "expr | expr", "expr OR expr", "expr && expr", "-expr"</li>
+                                            <li>Meta match: "version:17", "tags:1-3", "type:way"</li>
+                                            <li>(ways only) nb nodes: "nodes:10-15"</li>
+                                        </ul>
+                                    </td>
+                                </tr>
+                            </table>
 
-                    <input style="width:100%;" name="tags" id="tags_input" />
-                </fieldset>
+                        </div>
 
-                <fieldset>
-                    <legend>Draw your search on the map</legend>
-                    <div id="map"></div>
-                    <input style="width:100%;" name="polygon" id="polygon_input" />
-                </fieldset>
-                <input type="submit" value="Add" id="add_alert_button" />
-                <!--  
+                        <input style="width: 100%;" name="tags" id="tags_input" />
+                    </fieldset>
+
+                    <fieldset>
+                        <legend>Draw your search on the map</legend>
+                        <div id="map"></div>
+                        <input style="width: 100%;" name="polygon" id="polygon_input" />
+                    </fieldset>
+                    <input type="submit" value="Add" id="add_alert_button" />
+                    <!--  
           
             <div id="map"></div>
            
@@ -108,20 +120,24 @@
 
             </form>
             -->
+            </div>
+        </c:if>
+        <h2>Public alerts</h2>
+        <div id="public_alerts_list"></div>
+
+    </div>
+
+
+
+    <div id="footer">
+        <div id="footer_content">
+            <p>OSM-Watch tracks what happens on OpenStreetMap in real-time, and notifies you when changes match some criteria.</p>
+
+            <p>
+                Code on <a href="https://github.com/cstenac/osm-watch">Github</a>
+            </p>
         </div>
-
-
-
-
-
-
-    </c:if>
-
-
-
-
-
-
+    </div>
 
 
 

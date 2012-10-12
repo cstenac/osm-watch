@@ -81,15 +81,14 @@ function deleteAlert(key) {
 }
 
 function reloadAlertsList() {
-	$("alerts_list").html("<h3>Loading, please wait ...</h3>");
+	$("#alerts_list").html("<h3>Loading, please wait ...</h3>");
+	$("#public_alerts_list").html("<h3>Loading, please wait ...</h3>");
+
 	$.getJSON("api/list_alerts", function(data) {
 		$("#alerts_list").html("<table class=\"alerts_list\" id=\"alerts_list_table\"></table>");
 
 		var aaData = [];
 
-		var html = "<table class=\"alerts_list\" >";
-
-		html += "<tr><th>Created</th><th>Alert name</th><th>Watched tags</th><th>Link</th><th>Nb. matches</th><th>Remove</th></tr>";
 		for (var i in data.alerts) {
 			var rowData = [data.alerts[i].id, new Date(data.alerts[i].creation_timestamp),
 			               data.alerts[i].name];
@@ -102,23 +101,10 @@ function reloadAlertsList() {
 			rowData.push(data.alerts[i].nb_matches);
 			rowData.push("<a href=\"#\" onclick=\"deleteAlert('"+ data.alerts[i].key + "')\">Remove</a>");
 			aaData.push(rowData);
-
-//			html += "<tr>";
-//			html += "<td> " + data.alerts[i].id + " " + new Date(data.alerts[i].creation_timestamp) + "</td>";
-//			html += "<td>" + data.alerts[i].name + "</td><td>";
-//			if (data.alerts[i].tags == null) {
-//				html += "all tags";
-//			} else {
-//				html += data.alerts[i].tags;
-//			}
-//			html += "</td><td><a href=\"api/rss_feed?key="  + data.alerts[i].key + "\">RSS feed</a></td>";
-//			html += "<td>" + data.alerts[i].nb_matches + "</td>";
-//			html += "<td><a href=\"#\" onclick=\"deleteAlert('"+ data.alerts[i].key + "')\">Remove</a></td>";
-//			html += "</tr>";
 		}
-		html +="</table>";
 
 		$("#alerts_list_table").dataTable({
+			"bJQueryUI": true,
 			"aaData" : aaData,
 			"aoColumns" : [
 			               { "sTitle": "Id" },
@@ -129,11 +115,43 @@ function reloadAlertsList() {
 			               { "sTitle": "Matches", "sClass": "center" },
 			               { "sTitle": "Actions", "sClass": "center" }
 			               ]
- 
+
 		});
+	});
+	$.getJSON("api/list_alerts?public=true", function(data) {
+		$("#public_alerts_list").html("<table class=\"alerts_list\" id=\"alerts_list_table\"></table>");
 
+		var aaData = [];
 
-//		$("#alerts_list").html(html);
+		for (var i in data.alerts) {
+			var rowData = [data.alerts[i].id, new Date(data.alerts[i].creation_timestamp),
+			               data.alerts[i].name];
+			if (data.alerts[i].tags == null) {
+				rowData.push("All");
+			} else {
+				rowData.push(data.alerts[i].tags);
+			}
+			rowData.push("<a href=\"api/rss_feed?key="  + data.alerts[i].key + "\">RSS feed</a>");
+			rowData.push(data.alerts[i].nb_matches);
+			rowData.push("<a href=\"#\" onclick=\"deleteAlert('"+ data.alerts[i].key + "')\">Remove</a>");
+			aaData.push(rowData);
+		}
+		html +="</table>";
+
+		$("#alerts_list_table").dataTable({
+			"bJQueryUI": true,
+			"aaData" : aaData,
+			"aoColumns" : [
+			               { "sTitle": "Id" },
+			               { "sTitle": "Created" },
+			               { "sTitle": "Name" },
+			               { "sTitle": "Filter", "sClass": "center" },
+			               { "sTitle": "RSS", "sClass": "center" },
+			               { "sTitle": "Matches", "sClass": "center" },
+			               { "sTitle": "Actions", "sClass": "center" }
+			               ]
+
+		});
 	});
 }
 
