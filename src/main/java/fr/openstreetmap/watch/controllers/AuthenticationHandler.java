@@ -30,134 +30,123 @@ import fr.openstreetmap.watch.model.db.UserSession;
 import fr.openstreetmap.watch.util.XMLUtils;
 
 public class AuthenticationHandler {
-	static final String request_token_url = "http://www.openstreetmap.org/oauth/request_token"        ;                                                                                                                     
-	static final String access_token_url = "http://www.openstreetmap.org/oauth/access_token"     ;                                                                                                                          
-	static final String authorize_token_url = "http://www.openstreetmap.org/oauth/authorize";
+    static final String request_token_url = "http://www.openstreetmap.org/oauth/request_token"        ;                                                                                                                     
+    static final String access_token_url = "http://www.openstreetmap.org/oauth/access_token"     ;                                                                                                                          
+    static final String authorize_token_url = "http://www.openstreetmap.org/oauth/authorize";
 
-//	static final String callbackUrl = "http://localhost:8080/osm-watch/auth_callback";
-//	static final String afterLoginUrl = "http://localhost:8080/osm-watch/";
+    //	static final String callbackUrl = "http://localhost:8080/osm-watch/auth_callback";
+    //	static final String afterLoginUrl = "http://localhost:8080/osm-watch/";
 
-	static final String consumerKey = "A0LiKR5qp3I01aO6SWUbvo2xlAnBimQaaKwTL6V0";
-	static final String consumerSecret = "mcPHW4JDYQgek4xLMiwyAfWKGC2a07azTbMTQIUu";
+    static final String consumerKey = "A0LiKR5qp3I01aO6SWUbvo2xlAnBimQaaKwTL6V0";
+    static final String consumerSecret = "mcPHW4JDYQgek4xLMiwyAfWKGC2a07azTbMTQIUu";
 
-	public static Map<String, String> parseCookies(HttpServletRequest req) {
-		Map<String, String> ret = new HashMap<String, String>();
-		if (req.getCookies() != null) {
-			for (Cookie c : req.getCookies()) {
-				ret.put(c.getName(), c.getValue());
-			}
-		}
-		return ret;
-	}
+    public static Map<String, String> parseCookies(HttpServletRequest req) {
+        Map<String, String> ret = new HashMap<String, String>();
+        if (req.getCookies() != null) {
+            for (Cookie c : req.getCookies()) {
+                ret.put(c.getName(), c.getValue());
+            }
+        }
+        return ret;
+    }
 
-	public static User verityAuth(HttpServletRequest req, DatabaseManager dbManager) {
-		return AuthenticationHandler.verityAuth(req, dbManager, true);
-	}
+    public static User verityAuth(HttpServletRequest req, DatabaseManager dbManager) {
+        Map<String, String> map = parseCookies(req);
+        String cookieAT = map.get("access_token");
+        if (cookieAT == null) {
+            return null; // Not authenticated at all
+        }
+        Query q = dbManager.getEM().createQuery ("SELECT x FROM User x INNER JOIN x.sessions sess WHERE sess.accessToken= ?1");
+        q.setParameter(1, cookieAT);
+        List<User> l = q.getResultList();
+        if (l.size() == 0) {
+            logger.warn("No valid user for this access token");
+            return null;
+        }
+        User u = l.get(0);
+        u.getAlerts();
+        System.out.println("****** VERIFY AUTH, FOUND " + l.get(0) + " " + u.getAlerts());//.getAlerts().size());
+        return l.get(0);
+    }
 
-	public static User verityAuth(HttpServletRequest req, DatabaseManager dbManager, boolean doTransaction) {
-		Map<String, String> map = parseCookies(req);
-		String cookieAT = map.get("access_token");
-		if (cookieAT == null) {
-			return null; // Not authenticated at all
-		}
-		if (doTransaction) dbManager.begin();
-		try {
-			Query q = dbManager.getEM().createQuery ("SELECT x FROM User x INNER JOIN x.sessions sess WHERE sess.accessToken= ?1");
-			q.setParameter(1, cookieAT);
-			List<User> l = q.getResultList();
-			if (l.size() == 0) {
-				logger.warn("No valid user for this access token");
-				return null;
-			}
-			User u = l.get(0);
-			u.getAlerts();
-			System.out.println("****** VERIFY AUTH, FOUND " + l.get(0) + " " + u.getAlerts());//.getAlerts().size());
-			return l.get(0);
-		} finally {
-			if (doTransaction) dbManager.rollback();
-		}
-	}
+    public static void authenticate(HttpServletRequest req, HttpServletResponse resp) throws Exception {
+        OAuthConsumer consumer = new DefaultOAuthConsumer(consumerKey, consumerSecret);
+        OAuthProvider provider = new DefaultOAuthProvider(request_token_url, access_token_url, authorize_token_url);
 
-	public static void authenticate(HttpServletRequest req, HttpServletResponse resp) throws Exception {
-		OAuthConsumer consumer = new DefaultOAuthConsumer(consumerKey, consumerSecret);
-		OAuthProvider provider = new DefaultOAuthProvider(request_token_url, access_token_url, authorize_token_url);
-		
-//		Enumeration<String> e = req.getHeaderNames();
-//		while (e.hasMoreElements()) {
-//		String x = e.nextElement();
-//			System.out.println("H NAME " + x + " -> " + req.getHeader(x));
-//		}
+        //		Enumeration<String> e = req.getHeaderNames();
+        //		while (e.hasMoreElements()) {
+        //		String x = e.nextElement();
+        //			System.out.println("H NAME " + x + " -> " + req.getHeader(x));
+        //		}
 
-//		String url = req.getHeader("referer") + "auth_callback";// req.getRequestURL().toString().replace("authenticate", "auth_callback");
-		String url = ApplicationConfigurator.getBaseURL() + "/auth_callback";// req.getRequestURL().toString().replace("authenticate", "auth_callback");
+        //		String url = req.getHeader("referer") + "auth_callback";// req.getRequestURL().toString().replace("authenticate", "auth_callback");
+        String url = ApplicationConfigurator.getBaseURL() + "/auth_callback";// req.getRequestURL().toString().replace("authenticate", "auth_callback");
 
-		System.out.println("********* WANT TO SEND TO "+ url);
-		String authUrl = provider.retrieveRequestToken(consumer, url);
-		//req.getRequestURL().toString().replace("authenticate", ""));//callbackUrl);
+        System.out.println("********* WANT TO SEND TO "+ url);
+        String authUrl = provider.retrieveRequestToken(consumer, url);
+        //req.getRequestURL().toString().replace("authenticate", ""));//callbackUrl);
 
-		resp.addCookie(new Cookie("request_token", consumer.getToken()));
-		resp.addCookie(new Cookie("request_token_secret", consumer.getTokenSecret()));
-		resp.setStatus(302);
-		resp.setHeader("Location", authUrl);
-		return;
-	}
+        resp.addCookie(new Cookie("request_token", consumer.getToken()));
+        resp.addCookie(new Cookie("request_token_secret", consumer.getTokenSecret()));
+        resp.setStatus(302);
+        resp.setHeader("Location", authUrl);
+        return;
+    }
 
-	public static User processAuthReturn(DatabaseManager dbManager, HttpServletRequest req, HttpServletResponse resp) throws Exception {
-		OAuthConsumer consumer = new DefaultOAuthConsumer(consumerKey, consumerSecret);
-		OAuthProvider provider = new DefaultOAuthProvider(request_token_url, access_token_url, authorize_token_url);
+    public static User processAuthReturn(DatabaseManager dbManager, HttpServletRequest req, HttpServletResponse resp) throws Exception {
+        OAuthConsumer consumer = new DefaultOAuthConsumer(consumerKey, consumerSecret);
+        OAuthProvider provider = new DefaultOAuthProvider(request_token_url, access_token_url, authorize_token_url);
 
-		Map<String, String> map = parseCookies(req);
-		if (!map.containsKey("request_token")) {
-			throw new IOException("request_token not in session");
-		}
-		consumer.setTokenWithSecret(map.get("request_token"),  map.get("request_token_secret"));
+        Map<String, String> map = parseCookies(req);
+        if (!map.containsKey("request_token")) {
+            throw new IOException("request_token not in session");
+        }
+        consumer.setTokenWithSecret(map.get("request_token"),  map.get("request_token_secret"));
 
-		String verifier = req.getParameter("oauth_verifier");
+        String verifier = req.getParameter("oauth_verifier");
 
-		provider.setOAuth10a(true);
-		provider.retrieveAccessToken(consumer, verifier);
+        provider.setOAuth10a(true);
+        provider.retrieveAccessToken(consumer, verifier);
 
-		// TODO: remove cookie request_token and request_token_secret
+        // TODO: remove cookie request_token and request_token_secret
 
-		/* Fetch the uid and user name from OSM */
-		URL url = new URL("http://api.openstreetmap.org/api/0.6/user/details");
-		HttpURLConnection request = (HttpURLConnection) url.openConnection();
+        /* Fetch the uid and user name from OSM */
+        URL url = new URL("http://api.openstreetmap.org/api/0.6/user/details");
+        HttpURLConnection request = (HttpURLConnection) url.openConnection();
 
-		consumer.sign(request);
-		request.connect();
-		String osmResponse = IOUtils.toString(request.getInputStream());
-		Document doc = XMLUtils.parse(osmResponse);
-		Element e = (Element)XMLUtils.xpath(doc, "/osm/user").iterator().next();
+        consumer.sign(request);
+        request.connect();
+        String osmResponse = IOUtils.toString(request.getInputStream());
+        Document doc = XMLUtils.parse(osmResponse);
+        Element e = (Element)XMLUtils.xpath(doc, "/osm/user").iterator().next();
 
-		long osmId = Long.parseLong(e.getAttribute("id"));
+        long osmId = Long.parseLong(e.getAttribute("id"));
 
-		dbManager.getEM().getTransaction().begin();
-		Query q = dbManager.getEM().createQuery("SELECT x FROM User x WHERE osmId= ?1");
-		q.setParameter(1, osmId);
+        Query q = dbManager.getEM().createQuery("SELECT x FROM User x WHERE osmId= ?1");
+        q.setParameter(1, osmId);
 
-		User user = null;
-		List<User> l = q.getResultList();
-		if (l.size() > 0) {
-			user = (User)l.get(0);
-		} else {
-			user = new User();
-			user.setOsmId(osmId);
-		}
-		user.setScreenName(e.getAttribute("display_name"));
+        User user = null;
+        List<User> l = q.getResultList();
+        if (l.size() > 0) {
+            user = (User)l.get(0);
+        } else {
+            user = new User();
+            user.setOsmId(osmId);
+        }
+        user.setScreenName(e.getAttribute("display_name"));
 
-		UserSession us = new UserSession();
-		us.setUser(user);
-		us.setAccessToken(consumer.getToken());
+        UserSession us = new UserSession();
+        us.setUser(user);
+        us.setAccessToken(consumer.getToken());
 
-		dbManager.getEM().persist(user);
-		dbManager.getEM().persist(us);
-		dbManager.getEM().getTransaction().commit();
+        dbManager.getEM().persist(user);
+        dbManager.getEM().persist(us);
 
-		Cookie cookie = new Cookie("access_token", us.getAccessToken());
-		cookie.setPath("/");
-		resp.addCookie(cookie);
-		return user;
-	}
+        Cookie cookie = new Cookie("access_token", us.getAccessToken());
+        cookie.setPath("/");
+        resp.addCookie(cookie);
+        return user;
+    }
 
-	private static Logger logger = Logger.getLogger("osm.watch.auth");
+    private static Logger logger = Logger.getLogger("osm.watch.auth");
 }

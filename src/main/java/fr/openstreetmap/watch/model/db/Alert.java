@@ -63,9 +63,15 @@ public class Alert {
 	public void setCreationTimestamp(long creationTimestamp) {
 		this.creationTimestamp = creationTimestamp;
 	}
+	public boolean isPublicAlert() {
+        return publicAlert;
+    }
+    public void setPublicAlert(boolean publicAlert) {
+        this.publicAlert = publicAlert;
+    }
 
 
-	@Id
+    @Id
     @GeneratedValue(strategy=GenerationType.AUTO)
     private long id;
 
@@ -80,4 +86,5 @@ public class Alert {
     private String uniqueKey;
     private String watchedTags;
     private String polygonWKT;
+    private boolean publicAlert;
 }

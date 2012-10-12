@@ -34,9 +34,7 @@ public class DatabaseManager {
     }
     
     public void addAlert(Alert ad) {
-        em.getTransaction().begin();
         em.persist(ad);
-        em.getTransaction().commit();
     }
     
     public EntityManager getEM() {
@@ -48,9 +46,17 @@ public class DatabaseManager {
         return (List<Alert>) q.getResultList ();
     }
     
+    public Alert getAlertByKey(String uniqueKey) {
+        Query q = em.createQuery("SELECT x FROM Alert x where uniqueKey = ?1");
+        q.setParameter(1, uniqueKey);
+        List<Alert> aa = q.getResultList();
+        if (aa.size() == 0) {
+            return null;
+        }
+        return aa.get(0);
+    }
+    
     public void deleteAlert(String uniqueKey) {
-        em.getTransaction().begin();
-        
         Query q = em.createQuery ("SELECT x FROM Alert x WHERE x.uniqueKey = ?1");
         q.setParameter (1, uniqueKey);
         List<Alert> results = (List<Alert>) q.getResultList ();
@@ -58,7 +64,6 @@ public class DatabaseManager {
         for (Alert ar : results) {
             em.remove(ar);
         }
-        em.getTransaction().commit();
     }
     
     private static Logger logger = Logger.getLogger("osm.watch.database");

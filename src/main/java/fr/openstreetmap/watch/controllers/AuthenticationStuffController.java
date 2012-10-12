@@ -27,8 +27,11 @@ public class AuthenticationStuffController {
     @RequestMapping(value="/authenticate")
     public void authenticate(HttpServletRequest req, HttpServletResponse resp) throws IOException{
         BasicConfigurator.configure();
+
+        dbManager.begin();
         if (AuthenticationHandler.verityAuth(req, dbManager) != null) {
             resp.sendError(400, "Already authenticated");
+            dbManager.rollback();
             return;
         }
         try {
@@ -36,27 +39,34 @@ public class AuthenticationStuffController {
         } catch (Exception e) {
             logger.error("Failed to authenticate", e); 
             resp.sendError(401, "Failed to authenticate");
+        } finally {
+            dbManager.rollback();
         }
     }
 
     @RequestMapping(value="/auth_callback")
     public void authCallback(HttpServletRequest req, HttpServletResponse resp) throws IOException{
+        dbManager.begin();
+
         System.out.println("oauth callback");
         if (AuthenticationHandler.verityAuth(req, dbManager) != null) {
             resp.sendError(400, "Already authenticated");
+            dbManager.rollback();
             return;
         }
         try {
             System.out.println("Processing OAuth callback");
             User ud = AuthenticationHandler.processAuthReturn(dbManager, req, resp);
-	    System.out.println("NOW AUTHENTICATED !");
+            System.out.println("NOW AUTHENTICATED !");
             resp.setStatus(200);
-//            resp.addHeader("Location", ApplicationConfigurator.getBaseURL());
-	    resp.setContentType("text/html");
-	    resp.getWriter().write("<html><head><meta http-equiv=\"refresh\" content=\"0; URL=" +  ApplicationConfigurator.getBaseURL() + "/\" /></head></html>");
+            //            resp.addHeader("Location", ApplicationConfigurator.getBaseURL());
+            resp.setContentType("text/html");
+            resp.getWriter().write("<html><head><meta http-equiv=\"refresh\" content=\"0; URL=" +  ApplicationConfigurator.getBaseURL() + "/\" /></head></html>");
+            dbManager.commit();
         } catch (Throwable e) {
             logger.error("Failed to authenticate", e); 
             resp.sendError(401, "Failed to authenticate");
+            dbManager.rollback();
         }
     }
 

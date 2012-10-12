@@ -39,6 +39,8 @@ public class DebugController {
 
     @RequestMapping(value="/debug/send_augmented_diff")
     public void newAlert(String file, HttpServletRequest req, HttpServletResponse resp) throws IOException {
+        // Non transactional
+        
         String content = FileUtils.readFileToString(new File(file));
         try {
             engine.handleAugmentedDiff(content, 2);
@@ -50,6 +52,7 @@ public class DebugController {
     
     @RequestMapping(value="/debug/next_augmented_diff")
     public void nextAugmentedDiff(HttpServletResponse resp) throws IOException {
+        // Non transactional
         try {
         	lad.run();
         	logger.info("Augmented diff handling done");
@@ -61,6 +64,7 @@ public class DebugController {
     
     @RequestMapping(value="/debug/add_alert_to_filter")
     public void newAlert(String uid, String tags, String polygons, HttpServletResponse resp) throws IOException {
+        // Non transactional
         Alert ad = new Alert();
         ad.setPolygonWKT(polygons);
         ad.setWatchedTags(tags);

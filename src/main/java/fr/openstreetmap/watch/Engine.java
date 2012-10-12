@@ -38,6 +38,7 @@ public class Engine {
 	@PostConstruct
 	public void init() throws ParseException {
 		logger.info("Loading spatial filter");
+		dbManager.begin();
 		/* Preload the filters */
 		for (Alert ad : dbManager.getAlerts()) {
 			try {
@@ -47,6 +48,7 @@ public class Engine {
 				logger.error("Failed to load alert " + ad.getId(), e);
 			}
 		}
+		dbManager.rollback();
 	}
 
 	public void addAlertToSpatialFilter(Alert ad) throws Exception {
