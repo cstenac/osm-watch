@@ -96,7 +96,7 @@ function reloadAlertsList() {
 		var aaData = [];
 
 		for (var i in data.alerts) {
-			var rowData = [new Date(data.alerts[i].creation_timestamp),
+			var rowData = [$.format.date(new Date(data.alerts[i].creation_timestamp), "yyyy/MM/dd"),
 			               data.alerts[i].name];
 			if (data.alerts[i].tags == null) {
 				rowData.push("All");
@@ -106,11 +106,11 @@ function reloadAlertsList() {
 			rowData.push("<a href=\"api/rss_feed?key="  + data.alerts[i].key + "\">RSS feed</a>");
 			rowData.push(data.alerts[i].nb_matches);
 			
-			var actions = "<a href=\"#\" onclick=\"deleteAlert('"+ data.alerts[i].key + "')\">Delete</a><br />";
+			var actions = "[<a href=\"#\" onclick=\"deleteAlert('"+ data.alerts[i].key + "')\">Delete</a>] ";
 			if (data.alerts[i].publicAlert) {
-				actions += "<a href=\"#\" onclick=\"setAlertPublic('"+ data.alerts[i].key + "', false)\">Make private</a>";
+				actions += "[<a href=\"#\" onclick=\"setAlertPublic('"+ data.alerts[i].key + "', false)\">Make private</a>]";
 			} else {
-				actions += "<a href=\"#\" onclick=\"setAlertPublic('"+ data.alerts[i].key + "', true)\">Make public</a>";
+				actions += "[<a href=\"#\" onclick=\"setAlertPublic('"+ data.alerts[i].key + "', true)\">Make public</a>]";
 			}
 			rowData.push(actions);
 
@@ -138,7 +138,7 @@ function reloadAlertsList() {
 		var aaData = [];
 
 		for (var i in data.alerts) {
-			var rowData = [new Date(data.alerts[i].creation_timestamp),
+			var rowData = [$.format.date(new Date(data.alerts[i].creation_timestamp), "yyyy/MM/dd"),
 			               data.alerts[i].name];
 			if (data.alerts[i].tags == null) {
 				rowData.push("All");

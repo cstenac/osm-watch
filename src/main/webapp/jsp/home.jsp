@@ -21,6 +21,8 @@
 <link rel="stylesheet" href="resources/jqui/jquery-ui-1.9.0.custom.css" />
 
 
+<script src="resources/jquery.dateFormat.js"></script>
+
 <script src="resources/watch.js"></script>
 
 </head>
