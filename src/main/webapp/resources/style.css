@@ -1,5 +1,6 @@
 body {
 	font-family: Arial;
+	font-size:13px;
 	/*        min-height: 100%;                                                                                                                                                                                          
     overflow: hidden;                                                                                                                                                                                          
     margin: 0px;
@@ -43,6 +44,9 @@ div#titlebar {
 	left: 0;
 	height: 3em;
 }
+table.alerts_list {
+		font-size:13px;
+}
 
 #titlebar .title {
 	width: 900px;
@@ -55,7 +59,6 @@ div#titlebar {
 
 div#alerts_list {
 	width: 100%;
-	font-size:0.9em;
 }
 
 #close_x {
