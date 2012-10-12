@@ -15,9 +15,11 @@ import javax.xml.xpath.XPathFactory;
 import org.apache.log4j.Logger;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
+import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import org.xml.sax.InputSource;
 
+import com.google.common.base.Preconditions;
 import com.vividsolutions.jts.geom.Coordinate;
 import com.vividsolutions.jts.geom.GeometryFactory;
 
@@ -30,7 +32,7 @@ import fr.openstreetmap.watch.util.XMLUtils;
 import fr.openstreetmap.watch.util.XMLUtils.ElementIterable;
 
 
-public class AugmentedDiffParser implements DiffParser {
+public class AugmentedDiffV2Parser implements DiffParser{
     private DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
     XPathFactory xPathfactory = XPathFactory.newInstance();
 
@@ -38,6 +40,8 @@ public class AugmentedDiffParser implements DiffParser {
 
     /* These nodes haven't changed, they are used to reconstruct way geometry */
     Map<Long, NodeDescriptor> keptNodes = new HashMap<Long, NodeDescriptor>();
+    /*  These ways haven't chnaged, they are used to reconstruct relations */
+    Map<Long, WayDescriptor> keptWays = new HashMap<Long, WayDescriptor>();
 
     Map<Long, NodeDescriptor> reallyDeletedNodes = new HashMap<Long, NodeDescriptor>();
     Map<Long, NodeChange> changedNodes = new HashMap<Long, NodeChange>();
@@ -51,96 +55,99 @@ public class AugmentedDiffParser implements DiffParser {
     public Map<Long, ChangesetDescriptor> getChangesets() {
         return changesets;
     }
-
-    protected void parseNodesSections(XPath xpath, Document doc) throws Exception{
-        Map<Long, NodeDescriptor> maybeDeletedNodes = new HashMap<Long, NodeDescriptor>();
-        Map<Long, NodeDescriptor> maybeNewNodes = new HashMap<Long, NodeDescriptor>();
-        {
-            XPathExpression expr = xpath.compile("/osmAugmentedDiff/erase/node");
-            NodeList nl = (NodeList)expr.evaluate(doc, XPathConstants.NODESET);
-            for (Element e : new XMLUtils.ElementIterable(nl)) {
-                NodeDescriptor nd = parseNode(e);
-                maybeDeletedNodes.put(nd.id, nd);
+    
+    protected Element getChildElement(Element node, int index) {
+        NodeList nl = node.getChildNodes();
+        int nextElement = 0;
+        for (int i = 0; i < nl.getLength(); i++) {
+            Node child = nl.item(i);
+            if (child instanceof Element) {
+                if (nextElement == index) return (Element)child;
+                nextElement++;
             }
         }
-
-        {
-            XPathExpression expr = xpath.compile("/osmAugmentedDiff/keep/node");
-            NodeList nl = (NodeList)expr.evaluate(doc, XPathConstants.NODESET);
-            for (Element e : new XMLUtils.ElementIterable(nl)) {
-                NodeDescriptor nd = parseNode(e);
-                keptNodes.put(nd.id, nd);
-            }
-        }
-        {
-            XPathExpression expr = xpath.compile("/osmAugmentedDiff/insert/node");
-            NodeList nl = (NodeList)expr.evaluate(doc, XPathConstants.NODESET);
-            for (Element e : new XMLUtils.ElementIterable(nl)) {
-                NodeDescriptor nd = parseNode(e);
-                maybeNewNodes.put(nd.id, nd);
-            }
-        }
-        /* Now, collate the possibly deleted nodes */
-        for (NodeDescriptor nd : maybeNewNodes.values()) {
-            if (maybeDeletedNodes.containsKey(nd.id)) {
-                /* This node is modified, create the change */
-                NodeDescriptor oldVersion = maybeDeletedNodes.get(nd.id);
-                NodeChange nc = new NodeChange(oldVersion, nd);
-                changedNodes.put(nd.id, nc);
-                maybeDeletedNodes.remove(nd.id);
-            } else {
-                /* This node is truly new */
-                newNodes.put(nd.id, nd);
-            }
-        }
-        /* The nodes remaining in maybeDeletedNodes are really deleted */
-        reallyDeletedNodes.putAll(maybeDeletedNodes);
+        throw new IllegalArgumentException("Failed to find child element " + index +  " of " + node);
     }
 
-    protected void parseWaysSections(XPath xpath, Document doc) throws Exception{
-        Map<Long, WayDescriptor> maybeDeletedWays = new HashMap<Long, WayDescriptor>();
-        Map<Long, WayDescriptor> maybeNewWays = new HashMap<Long, WayDescriptor>();
-        {
-            XPathExpression expr = xpath.compile("/osmAugmentedDiff/erase/way");
-            NodeList nl = (NodeList)expr.evaluate(doc, XPathConstants.NODESET);
-            for (Element e : new XMLUtils.ElementIterable(nl)) {
-                WayDescriptor wd = parseWay(e, true);
-                maybeDeletedWays.put(wd.id, wd);
-            }
-        }
-        {
-            XPathExpression expr = xpath.compile("/osmAugmentedDiff/keep/way");
-            NodeList nl = (NodeList)expr.evaluate(doc, XPathConstants.NODESET);
-            for (Element e : new XMLUtils.ElementIterable(nl)) {
-                WayDescriptor wd = parseWay(e, true);
-                waysWithChangedNodes.put(wd.id, wd);
-            }
-        }
-        {
-            XPathExpression expr = xpath.compile("/osmAugmentedDiff/insert/way");
-            NodeList nl = (NodeList)expr.evaluate(doc, XPathConstants.NODESET);
-            for (Element e : new XMLUtils.ElementIterable(nl)) {
-                WayDescriptor wd = parseWay(e, true);
-                maybeNewWays.put(wd.id, wd);
-            }
-        }
+    protected void parseActions(XPath xpath, Document doc) throws Exception {
+        XPathExpression expr = xpath.compile("/osmAugmentedDiff/action");
+        NodeList nl = (NodeList)expr.evaluate(doc, XPathConstants.NODESET);
+        for (Element e : new XMLUtils.ElementIterable(nl)) {
+            String type = e.getAttribute("type");
 
-        for (WayDescriptor wd : maybeNewWays.values()) {
-            if (maybeDeletedWays.containsKey(wd.id)) {
-                /* This way is modified, create the change */
-                WayDescriptor oldVersion = maybeDeletedWays.get(wd.id);
-                WayChange wc = new WayChange(oldVersion, wd);
-                changedWays.put(wd.id, wc);
-                maybeDeletedWays.remove(wd.id);
+            if (type.equals("info")) {
+                Element child = getChildElement(e, 0);
+                if (child.getNodeName().equals("node")) {
+                    NodeDescriptor nd = parseNode(child);
+                    keptNodes.put(nd.id, nd);
+                } else if (child.getNodeName().equals("way")) {
+                    WayDescriptor wd = parseWay(child, true);
+                    keptWays.put(wd.id, wd);
+                } else {
+                    logger.info("Unknown child in type=info: " + child.getNodeName());
+                }
+            } else if (type.equals("create")) {
+                Element child = getChildElement(e, 0);
+                if (child.getNodeName().equals("node")) {
+                    NodeDescriptor nd = parseNode(child);
+                    newNodes.put(nd.id, nd);
+                } else if (child.getNodeName().equals("way")) {
+                    WayDescriptor wd = parseWay(child, true);
+                    newWays.put(wd.id, wd);
+                } else {
+                    logger.info("Unknown child in type=create: " + child.getNodeName());
+                }
+            } else if (type.equals("delete")) {
+                Element childOld = getChildElement(e, 0);
+                Preconditions.checkArgument(childOld.getNodeName().equals("old"));
+                Element childNew = getChildElement(e, 1);
+                Preconditions.checkArgument(childNew.getNodeName().equals("new"));
+
+                Element objInOld = getChildElement(childOld, 0);
+                Element objInNew = getChildElement(childNew, 0);
+
+                if (objInOld.getNodeName().equals("node")) {
+                    NodeDescriptor nd = parseNode(objInOld);
+                    /* Override data with the correct timestamp, changeset, uid and version from the "new" node */ 
+                    nd.uid = Long.parseLong(objInNew.getAttribute("uid"));
+                    nd.changeset = Long.parseLong(objInNew.getAttribute("changeset"));
+                    nd.version= Long.parseLong(objInNew.getAttribute("version"));
+                    //                    nd.timestamp = Long.parseLong(objInNew.getAttribute("timestamp"));
+                    reallyDeletedNodes.put(nd.id, nd);
+                } else if (objInOld.getNodeName().equals("way")) {
+                    WayDescriptor wd = parseWay(objInOld, true);
+                    /* Override data with the correct timestamp, changeset, uid and version from the "new" node */ 
+                    wd.uid = Long.parseLong(objInNew.getAttribute("uid"));
+                    wd.changeset = Long.parseLong(objInNew.getAttribute("changeset"));
+                    wd.version= Long.parseLong(objInNew.getAttribute("version"));
+                    //                    nd.timestamp = Long.parseLong(objInNew.getAttribute("timestamp"));
+                    reallyDeletedWays.put(wd.id, wd);
+                }
+            } else if (type.equals("modify")) {
+                Element childOld = getChildElement(e, 0);
+                Preconditions.checkArgument(childOld.getNodeName().equals("old"));
+                Element childNew = getChildElement(e, 1);
+                Preconditions.checkArgument(childNew.getNodeName().equals("new"));
+
+                Element objInOld = getChildElement(childOld, 0);
+                Element objInNew = getChildElement(childNew, 0);
+                
+                if (objInOld.getNodeName().equals("node")) {
+                    NodeDescriptor oldNode  = parseNode(objInOld);
+                    NodeDescriptor newNode = parseNode(objInNew);
+                    NodeChange nc = new NodeChange(oldNode, newNode);
+                    changedNodes.put(oldNode.id, nc);
+                } else if (objInOld.getNodeName().equals("way")) {
+                    WayDescriptor oldWay  = parseWay(objInOld, true);
+                    WayDescriptor newWay = parseWay(objInNew, true);
+                    WayChange nc = new WayChange(oldWay, newWay);
+                    changedWays.put(oldWay.id, nc);
+                }
             } else {
-                /* This way is truly new */
-                newWays.put(wd.id, wd);
+                logger.info("Unknown type " + type);
             }
         }
-        /* The ways remaining in maybeDeletedWays are really deleted */
-        reallyDeletedWays.putAll(maybeDeletedWays);
     }
-
 
     public void parse(String oscFileContent) throws Exception {
         oscFileContent =  oscFileContent.replace("&", "&amp;");
@@ -151,10 +158,8 @@ public class AugmentedDiffParser implements DiffParser {
         Document doc = db.parse(is);
         XPath xpath = xPathfactory.newXPath();
 
-        logger.info("XML parsed, handling nodes sections");
-        parseNodesSections(xpath, doc);
-        logger.info("Handling ways sections");
-        parseWaysSections(xpath, doc);
+        logger.info("XML parsed, handling actions");
+        parseActions(xpath, doc);
         logger.info("Computing changesets");
         groupStuffByChangeset();
         logger.info("Parsing done");
@@ -204,7 +209,7 @@ public class AugmentedDiffParser implements DiffParser {
         //nd.timestamp = Long.parseLong(e.getAttribute("id"));
         nd.changeset = Long.parseLong(e.getAttribute("changeset"));
         nd.uid = Long.parseLong(e.getAttribute("uid"));
-        
+
         if (e.getChildNodes().getLength() > 0) {
             nd.tags = new HashMap<String, String>();
             for (Element tagElt : new XMLUtils.ElementIterable(e.getChildNodes())) {

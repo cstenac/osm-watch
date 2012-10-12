@@ -23,6 +23,8 @@ import fr.openstreetmap.watch.model.ChangesetDescriptor;
 import fr.openstreetmap.watch.model.db.Alert;
 import fr.openstreetmap.watch.model.db.AlertMatch;
 import fr.openstreetmap.watch.parsers.AugmentedDiffParser;
+import fr.openstreetmap.watch.parsers.AugmentedDiffV2Parser;
+import fr.openstreetmap.watch.parsers.DiffParser;
 
 @Service
 public class Engine {
@@ -53,10 +55,17 @@ public class Engine {
 		spatialFilter.addAlert(a);
 	}
 
-	public void handleAugmentedDiff(String contents) throws Exception {
+	public void handleAugmentedDiff(String contents, int version) throws Exception {
 		logger.info("Handling augmented diff file " + contents.length() + " chars");
-		AugmentedDiffParser parser = new AugmentedDiffParser();
-		parser.parse(contents);
+		
+		DiffParser parser = null;
+		if (version == 1) {
+		    parser = new AugmentedDiffParser();
+		    parser.parse(contents);
+		} else {
+            parser = new AugmentedDiffV2Parser();
+            parser.parse(contents);
+		}
 
 		Map<Long, ChangesetDescriptor> changesets = parser.getChangesets();
 		List<ChangesetDescriptor> slist = new ArrayList<ChangesetDescriptor>();
@@ -68,14 +77,15 @@ public class Engine {
 			}
 		});
 		logger.info("Parsed " + changesets.size() + " changesets");
-
+		
 		dbManager.begin();
 		try {
 			for (ChangesetDescriptor changeset : slist) {
+//			    System.out.println("\n" + ChangesetDescriptorDumper.dump(changeset) );
 				Collection<SpatialMatch> spatialMatches = spatialFilter.getMatches(changeset);
-				logger.info("Matched changeset " + changeset.id  +", " + spatialMatches.size() + " alerts match");
 
 				for (SpatialMatch sm : spatialMatches) {
+                    logger.info("Changeset " + changeset.id + " geomatches alert " + sm.alert.desc.getId());
 					sm.cd = changeset;
 					if (sm.alert.josmFilter == null) {
 						MatchDescriptor md = new MatchDescriptor(sm);

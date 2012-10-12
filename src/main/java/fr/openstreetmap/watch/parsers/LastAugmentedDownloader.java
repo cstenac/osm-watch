@@ -90,7 +90,7 @@ public class LastAugmentedDownloader {
 			throw new Exception("Failed to download " + url);
 		}
 		logger.info("Handling " + url);
-		engine.handleAugmentedDiff(xml);
+		engine.handleAugmentedDiff(xml, 2);
 
 		// Only save if successful
 		alreadyDownloaded.add(url);

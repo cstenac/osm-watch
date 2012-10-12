@@ -41,7 +41,7 @@ public class DebugController {
     public void newAlert(String file, HttpServletRequest req, HttpServletResponse resp) throws IOException {
         String content = FileUtils.readFileToString(new File(file));
         try {
-            engine.handleAugmentedDiff(content);
+            engine.handleAugmentedDiff(content, 2);
         } catch (Exception e) {
             logger.error("Failed", e);
             resp.sendError(500, "Failed: " + e.getMessage());
