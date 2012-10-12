@@ -7,8 +7,8 @@ body {
 }
 
 
-table.alerts_list td {
-	border: 1px black solid;
+div#alerts_list {
+	width:70%;
 }
 
 #close_x {

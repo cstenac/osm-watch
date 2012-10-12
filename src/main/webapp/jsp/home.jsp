@@ -9,6 +9,8 @@
 <script src="//ajax.googleapis.com/ajax/libs/jquery/1.8.1/jquery.min.js"></script>
 
 <script src="resources/jquery.lightbox_me.js"></script>
+<script src="resources/jquery.dataTables.min.js"></script>
+<link rel="stylesheet" href="resources/jquery.dataTables.css" />
 
 <link rel="stylesheet" href="http://cdn.leafletjs.com/leaflet-0.4/leaflet.css" />
 <script src="http://cdn.leafletjs.com/leaflet-0.4/leaflet.js"></script>
@@ -32,8 +34,10 @@
 
         <h2>Your alerts</h2>
         <div id="alerts_list"></div>
-
+        
+        <p>
         <a href="#" id="new_alert_button">New alert</a>
+        </p>
 
         <div id="add_alert_box">
             <a id="close_x" class="close sprited" href="#">close</a>
