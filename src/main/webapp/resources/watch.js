@@ -56,7 +56,7 @@ function onDrawingEnded(e) {
 			if (i > 0) wkt += ", ";
 			lng = e.poly.getLatLngs()[i].lng.toFixed(4);
 			lat = e.poly.getLatLngs()[i].lat.toFixed(4);
-			wkt += lng + " " + lat
+			wkt += lng + " " + lat;
 		});
 
 		wkt += ", ";
@@ -86,6 +86,14 @@ function setAlertPublic(key, publicAlert) {
 	});
 }
 
+function prettyFilter(filterClass, filterParams) {
+	if (filterClass == null) return "No filter";
+	if (filterClass == "fr.openstreetmap.watch.matching.josmexpr.JOSMExprFilter") {
+		return "JOSM (" + filterParams + ")";
+	}
+	return filterClass + " (" + filterParams + ")";
+}
+
 function reloadAlertsList() {
 	$("#alerts_list").html("<h3>Loading, please wait ...</h3>");
 	$("#public_alerts_list").html("<h3>Loading, please wait ...</h3>");
@@ -97,15 +105,13 @@ function reloadAlertsList() {
 
 		for (var i in data.alerts) {
 			var rowData = [$.format.date(new Date(data.alerts[i].creation_timestamp), "yyyy/MM/dd"),
-			               data.alerts[i].name];
-			if (data.alerts[i].tags == null) {
-				rowData.push("All");
-			} else {
-				rowData.push(data.alerts[i].tags);
-			}
+			               data.alerts[i].name,
+			               prettyFilter(data.alerts[i].filterClass, data.alerts[i].filterParams)
+			               ];
+
 			rowData.push("<a href=\"api/rss_feed?key="  + data.alerts[i].key + "\">RSS feed</a>");
 			rowData.push(data.alerts[i].nb_matches);
-			
+
 			var actions = "[<a href=\"#\" onclick=\"deleteAlert('"+ data.alerts[i].key + "')\">Delete</a>] ";
 			if (data.alerts[i].publicAlert) {
 				actions += "[<a href=\"#\" onclick=\"setAlertPublic('"+ data.alerts[i].key + "', false)\">Make private</a>]";
@@ -121,14 +127,14 @@ function reloadAlertsList() {
 			"bJQueryUI": true,
 			"aaData" : aaData,
 			"aoColumns" : [
-//			               { "sTitle": "Id" },
-			               { "sTitle": "Created" },
-			               { "sTitle": "Name" },
-			               { "sTitle": "Filter", "sClass": "center" },
-			               { "sTitle": "RSS", "sClass": "center" },
-			               { "sTitle": "Matches", "sClass": "center" },
-			               { "sTitle": "Actions", "sClass": "center" }
-			               ]
+//{ "sTitle": "Id" },
+{ "sTitle": "Created" },
+{ "sTitle": "Name" },
+{ "sTitle": "Filter", "sClass": "center" },
+{ "sTitle": "RSS", "sClass": "center" },
+{ "sTitle": "Matches", "sClass": "center" },
+{ "sTitle": "Actions", "sClass": "center" }
+]
 
 		});
 	});
@@ -139,12 +145,9 @@ function reloadAlertsList() {
 
 		for (var i in data.alerts) {
 			var rowData = [$.format.date(new Date(data.alerts[i].creation_timestamp), "yyyy/MM/dd"),
-			               data.alerts[i].name];
-			if (data.alerts[i].tags == null) {
-				rowData.push("All");
-			} else {
-				rowData.push(data.alerts[i].tags);
-			}
+			               data.alerts[i].name,
+			               prettyFilter(data.alerts[i].filterClass, data.alerts[i].filterParams)
+			               ];
 			rowData.push("<a href=\"api/rss_feed?key="  + data.alerts[i].key + "\">RSS feed</a>");
 			rowData.push(data.alerts[i].nb_matches);
 			aaData.push(rowData);
@@ -154,13 +157,13 @@ function reloadAlertsList() {
 			"bJQueryUI": true,
 			"aaData" : aaData,
 			"aoColumns" : [
-//			               { "sTitle": "Id" },
-			               { "sTitle": "Created" },
-			               { "sTitle": "Name" },
-			               { "sTitle": "Filter", "sClass": "center" },
-			               { "sTitle": "RSS", "sClass": "center" },
-			               { "sTitle": "Matches", "sClass": "center" },
-			               ]
+//{ "sTitle": "Id" },
+{ "sTitle": "Created" },
+{ "sTitle": "Name" },
+{ "sTitle": "Filter", "sClass": "center" },
+{ "sTitle": "RSS", "sClass": "center" },
+{ "sTitle": "Matches", "sClass": "center" },
+]
 
 		});
 	});
@@ -170,27 +173,63 @@ $(document).ready(function() {
 	$("#new_alert_button").click(function(e) {
 		openNewAlertBox();
 	});
+	
+	$("#filter_type").change(function(e) {
+		filterType = $("#filter_type").val();
+		if (filterType == "josm") {
+			$("#josm_syntax_help").show();
+			$("#josm_fields").show();
+			$("#custom_fields").hide();
+
+		} else if (filterType == "custom"){
+			$("#josm_syntax_help").hide();
+			$("#josm_fields").hide();
+			$("#custom_fields").show();
+		}
+	});
 
 	$("#add_alert_button").click(function(e) {
+		e.preventDefault();
 		wkt = $("#polygon_input").val();
-		tags = $("#tags_input").val();
 		name = $("#name_input").val();
 
-		var url = "api/new_alert?wkt=" + wkt + "&tags=" + tags + "&name=" + name;
-		console.log("Sending alert to " + url);
-		$.ajax({url: url, dataType: "json", success: function(json) {
-			console.log("Alert added");
-			$("#add_alert_box").trigger("close");
-
-			reloadAlertsList();
-
-		}, error: function(x,y,z) {
-			console.log(x.responseText);
-			console.log(y);
-			console.log(z);
+		filterType = $("#filter_type").val();
+		filterClass = null;
+		filterParams = null;
+		if (filterType == "josm") {
+			if ($("#josm_params_input").val().length > 0) {
+				filterClass = "fr.openstreetmap.watch.matching.josmexpr.JOSMExprFilter";
+				filterParams = $("#josm_params_input").val();
+			}
+		} else if (filterType == "custom") {
+			filterClass = $("#filter_class_input").val();
+			filterParams = $("#filter_params_input").val();
 		}
+
+
+		var url = "api/new_alert";
+		var data = {"name" : name};
+		if (wkt.length > 0) {
+			data["wkt"] = wkt;
+		}
+		if (filterClass != null) data["filterClass"] = filterClass;
+		if (filterParams != null) data["filterParams"] = filterParams;
+
+		console.log("Sending alert to " + url);
+		$.ajax({type: 'POST', url: url, dataType: "json",
+			data : data,
+			success: function(json) {
+				console.log("Alert added");
+				$("#add_alert_box").trigger("close");
+				reloadAlertsList();
+			}, error: function(x,y,z) {
+				window.alert("Failed to create alert: " + x.responseText);
+				console.log(x.responseText);
+				console.log(y);
+				console.log(z);
+			}
 		});
-		e.preventDefault();
+		
 	});
 
 	reloadAlertsList();

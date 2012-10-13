@@ -62,8 +62,12 @@
                     </fieldset>
 
                     <fieldset>
-                        <legend>Watch expression</legend>
-                        <div class="syntax_help">
+                        <legend>Filter</legend>
+                        <select id="filter_type">
+                        	<option value="josm" selected="selected">JOSM</option>
+                        	<option value="custom">Custom</option>
+                        </select>
+                        <div class="syntax_help" id="josm_syntax_help">
                             Syntax examples (JOSM compatible):
                             <table>
                                 <tr>
@@ -86,10 +90,15 @@
                                     </td>
                                 </tr>
                             </table>
-
                         </div>
-
-                        <input style="width: 100%;" name="tags" id="tags_input" />
+                        <div id="josm_fields">
+                        	<input style="width: 100%;" name="filter_params" id="josm_params_input" />
+                        </div>
+                        <div id="custom_fields" style="display:none">
+                        	Class: <input style="width:80%;" name="filter_class" id="filter_class_input" style="display:none" />
+                        	<br />
+                        	Params: <input style="width: 80%;" name="filter_params" id="filter_params_input" />
+                        </div>
                     </fieldset>
 
                     <fieldset>
