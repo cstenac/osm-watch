@@ -41,7 +41,8 @@ public class DatabaseManager {
         return em;
     }
     
-    public List<Alert> getAlerts() {
+    @SuppressWarnings("unchecked")
+	public List<Alert> getAlerts() {
         Query q = em.createQuery ("SELECT x FROM Alert x");
         return (List<Alert>) q.getResultList ();
     }
@@ -49,7 +50,8 @@ public class DatabaseManager {
     public Alert getAlertByKey(String uniqueKey) {
         Query q = em.createQuery("SELECT x FROM Alert x where uniqueKey = ?1");
         q.setParameter(1, uniqueKey);
-        List<Alert> aa = q.getResultList();
+        @SuppressWarnings("unchecked")
+		List<Alert> aa = q.getResultList();
         if (aa.size() == 0) {
             return null;
         }
@@ -59,7 +61,8 @@ public class DatabaseManager {
     public void deleteAlert(String uniqueKey) {
         Query q = em.createQuery ("SELECT x FROM Alert x WHERE x.uniqueKey = ?1");
         q.setParameter (1, uniqueKey);
-        List<Alert> results = (List<Alert>) q.getResultList ();
+        @SuppressWarnings("unchecked")
+		List<Alert> results = (List<Alert>) q.getResultList ();
         logger.info("Removing alert " + uniqueKey +" -> " + results.size() + " matches");
         for (Alert ar : results) {
             em.remove(ar);

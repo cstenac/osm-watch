@@ -1,13 +1,19 @@
-package fr.openstreetmap.watch.matching;
+package fr.openstreetmap.watch.matching.legacy;
 
 import java.util.Set;
 
+import fr.openstreetmap.watch.matching.Filter;
+import fr.openstreetmap.watch.matching.MatchDescriptor;
+import fr.openstreetmap.watch.matching.SpatialMatch;
 import fr.openstreetmap.watch.model.NodeChange;
 import fr.openstreetmap.watch.model.NodeDescriptor;
 import fr.openstreetmap.watch.model.WayChange;
 import fr.openstreetmap.watch.model.WayDescriptor;
 
-public class TagKeysCriterion extends Criterion {
+/**
+ * Legacy/example filter based on tag keys.
+ */
+public class TagKeysCriterion extends Filter {
 	Set<String> watchedKeys;
 	public TagKeysCriterion(Set<String> watchedKeys) {
 		this.watchedKeys = watchedKeys;
@@ -15,7 +21,7 @@ public class TagKeysCriterion extends Criterion {
 	@Override
 	public MatchDescriptor matches(SpatialMatch sm) {
 		MatchDescriptor md = new MatchDescriptor(sm);
-		for (NodeDescriptor n : sm.matchingNewNodes) {
+		for (NodeDescriptor n : sm.newNodes) {
 			if (n.tags != null) {
 				for (String k : n.tags.keySet()) {
 					if (watchedKeys.contains(k)) {
@@ -24,7 +30,7 @@ public class TagKeysCriterion extends Criterion {
 				}
 			}
 		}
-		for (NodeDescriptor n : sm.matchingDeletedNodes) {
+		for (NodeDescriptor n : sm.deletedNodes) {
 			if (n.tags != null) {
 				for (String k : n.tags.keySet()) {
 					if (watchedKeys.contains(k)) {
@@ -33,7 +39,7 @@ public class TagKeysCriterion extends Criterion {
 				}
 			}
 		}
-		for (NodeChange n : sm.matchingChangedNodes) {
+		for (NodeChange n : sm.changedNodes) {
 			if (n.after.tags != null) {
 				for (String k : n.after.tags.keySet()) {
 					if (watchedKeys.contains(k)) {
@@ -51,7 +57,7 @@ public class TagKeysCriterion extends Criterion {
 		}
 		
 		
-		for (WayDescriptor n : sm.matchingNewWays) {
+		for (WayDescriptor n : sm.newWays) {
 			if (n.tags != null) {
 				for (String k : n.tags.keySet()) {
 					if (watchedKeys.contains(k)) {
@@ -60,7 +66,7 @@ public class TagKeysCriterion extends Criterion {
 				}
 			}
 		}
-		for (WayDescriptor n : sm.matchingDeletedWays) {
+		for (WayDescriptor n : sm.deletedWays) {
 			if (n.tags != null) {
 				for (String k : n.tags.keySet()) {
 					if (watchedKeys.contains(k)) {
@@ -69,7 +75,7 @@ public class TagKeysCriterion extends Criterion {
 				}
 			}
 		}
-		for (WayDescriptor n : sm.matchingWaysWithChangedNodes) {
+		for (WayDescriptor n : sm.waysWithChangedNodes) {
 			if (n.tags != null) {
 				for (String k : n.tags.keySet()) {
 					if (watchedKeys.contains(k)) {
@@ -78,7 +84,7 @@ public class TagKeysCriterion extends Criterion {
 				}
 			}
 		}
-		for (WayChange n : sm.matchingChangedWays) {
+		for (WayChange n : sm.changedWays) {
 			if (n.after.tags != null) {
 				for (String k : n.after.tags.keySet()) {
 					if (watchedKeys.contains(k)) {

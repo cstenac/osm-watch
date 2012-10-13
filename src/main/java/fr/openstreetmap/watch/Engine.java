@@ -16,7 +16,7 @@ import org.springframework.stereotype.Service;
 import com.vividsolutions.jts.io.ParseException;
 
 import fr.openstreetmap.watch.matching.MatchDescriptor;
-import fr.openstreetmap.watch.matching.RuntimeAlert;
+import fr.openstreetmap.watch.matching.MatchableAlert;
 import fr.openstreetmap.watch.matching.SpatialFilter;
 import fr.openstreetmap.watch.matching.SpatialMatch;
 import fr.openstreetmap.watch.model.ChangesetDescriptor;
@@ -42,7 +42,7 @@ public class Engine {
 		/* Preload the filters */
 		for (Alert ad : dbManager.getAlerts()) {
 			try {
-				RuntimeAlert a = new RuntimeAlert(ad);
+				MatchableAlert a = new MatchableAlert(ad);
 				spatialFilter.addAlert(a);
 			} catch (Exception e) {
 				logger.error("Failed to load alert " + ad.getId(), e);
@@ -52,7 +52,7 @@ public class Engine {
 	}
 
 	public void addAlertToSpatialFilter(Alert ad) throws Exception {
-		RuntimeAlert a = new RuntimeAlert(ad);
+		MatchableAlert a = new MatchableAlert(ad);
 //		dbManager.addAlert(ad);
 		spatialFilter.addAlert(a);
 	}
@@ -89,18 +89,18 @@ public class Engine {
 				for (SpatialMatch sm : spatialMatches) {
                     logger.info("Changeset " + changeset.id + " geomatches alert " + sm.alert.desc.getId());
 					sm.cd = changeset;
-					if (sm.alert.josmFilter == null) {
+					if (sm.alert.getFilter() == null) {
 						MatchDescriptor md = new MatchDescriptor(sm);
-						md.reasons.add("No tags filtering");
-						logger.info("   Tags unfiltered");
+						md.reasons.add("No filter");
+						logger.info("   No filter -> matches");
 						emitMatch(md);
 					} else {
-						MatchDescriptor md = sm.alert.josmFilter.matches(sm);
+						MatchDescriptor md = sm.alert.getFilter().matches(sm);
 						if (md.matches) {
-							logger.info("   Tags criterion also matches");
+							logger.info("   Filter matches");
 							emitMatch(md);
 						} else {
-							logger.info("   Tags criterion does not match");
+							logger.info("   Filter does not match");
 						}
 					}
 				}
@@ -113,11 +113,11 @@ public class Engine {
 	}
 
 	private void emitMatch(MatchDescriptor md) {
-		logger.info("Recordig match of alert " + md.sm.alert.desc.getId() + " by changeset " + md.sm.cd.id);
+		logger.info("Recordig match of alert " + md.getSpatialMatch().alert.desc.getId() + " by changeset " + md.getSpatialMatch().cd.id);
 		AlertMatch am = new AlertMatch();
-		am.setAlert(md.sm.alert.desc);
+		am.setAlert(md.getSpatialMatch().alert.desc);
 		am.setMatchTimestamp(System.currentTimeMillis());
-		am.setChangesetId(md.sm.cd.id);
+		am.setChangesetId(md.getSpatialMatch().cd.id);
 		StringBuilder sb = new StringBuilder();
 		sb.append("<p>Matches because</p><ul>");
 		for (String reason: md.reasons) {

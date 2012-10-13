@@ -20,7 +20,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 
 import fr.openstreetmap.watch.DatabaseManager;
 import fr.openstreetmap.watch.Engine;
-import fr.openstreetmap.watch.matching.RuntimeAlert;
+import fr.openstreetmap.watch.matching.MatchableAlert;
 import fr.openstreetmap.watch.model.db.Alert;
 import fr.openstreetmap.watch.model.db.User;
 import fr.openstreetmap.watch.util.SecretKeyGenerator;
@@ -75,7 +75,7 @@ public class AlertsEditionController {
             for (Alert ad : la) {
                 wr.object();
                 if (ad.getPolygonWKT() != null) wr.key("polygon").value(ad.getPolygonWKT());
-                if (ad.getWatchedTags() != null) wr.key("tags").value(ad.getWatchedTags());
+                if (ad.getFilterParams() != null) wr.key("tags").value(ad.getFilterParams());
                 wr.key("creation_timestamp").value(ad.getCreationTimestamp());
                 wr.key("name").value(ad.getName());
                 wr.key("id").value(ad.getId());
@@ -170,14 +170,14 @@ public class AlertsEditionController {
                 ad.setPolygonWKT(wkt);
             }
             if (tags != null && tags.length() > 0) {
-                ad.setWatchedTags(tags);
+                ad.setFilterParams(tags);
             }
             ad.setName(name);
             ad.setUniqueKey(SecretKeyGenerator.generate());
 
             /* Check syntax */
             try {
-                new RuntimeAlert(ad);
+                new MatchableAlert(ad);
             } catch (Exception e) {
                 logger.error("Failed to create alert, can't instantiate it", e);
                 resp.setStatus(400);

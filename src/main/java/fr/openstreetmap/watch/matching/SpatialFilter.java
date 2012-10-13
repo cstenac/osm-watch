@@ -23,15 +23,15 @@ import fr.openstreetmap.watch.model.WayDescriptor;
 
 public class SpatialFilter {
     Quadtree bboxTree = new Quadtree();
-    List<RuntimeAlert> unfilteredAlerts = new ArrayList<RuntimeAlert>();
+    List<MatchableAlert> unfilteredAlerts = new ArrayList<MatchableAlert>();
     GeometryFactory factory;
     ReadWriteLock rwLock = new ReentrantReadWriteLock();
 
-    public void addAlert(RuntimeAlert alert) {
+    public void addAlert(MatchableAlert alert) {
         rwLock.writeLock().lock();
         try {
-            if (alert.polygonFilter != null) {
-                bboxTree.insert(alert.polygonFilter.getEnvelopeInternal(), alert);
+            if (alert.getPolygon() != null) {
+                bboxTree.insert(alert.getPolygon().getEnvelopeInternal(), alert);
             } else {
                 unfilteredAlerts.add(alert);
             }
@@ -41,7 +41,7 @@ public class SpatialFilter {
         }
     }
 
-    private static SpatialMatch getSpatialMatch(RuntimeAlert a, Map<Long, SpatialMatch> map) {
+    private static SpatialMatch getSpatialMatch(MatchableAlert a, Map<Long, SpatialMatch> map) {
         if (map.containsKey(a.desc.getId())) {
             return map.get(a.desc.getId());
         } else {
@@ -67,41 +67,41 @@ public class SpatialFilter {
                 Point p = nd.getPointAfter();
                 Geometry geom = p.buffer(0.1);
                 for (Object o : bboxTree.query(geom.getEnvelopeInternal())) {
-                    RuntimeAlert a = (RuntimeAlert)o;
+                    MatchableAlert a = (MatchableAlert)o;
 //                    logger.info("cnode " + p + " intersets box " + a.desc.getId()  + " - compare it to " + a.polygonFilter);
-                    if (geom.intersects(a.polygonFilter)) {
+                    if (geom.intersects(a.getPolygon())) {
 //                        logger.info("cnode " + p + " DOES MATCH !!!!! " + a.desc.getId());
-                        getSpatialMatch(a, ret).matchingChangedNodes.add(nd);
+                        getSpatialMatch(a, ret).changedNodes.add(nd);
                     }
                 }
-                for (RuntimeAlert a : unfilteredAlerts) {
-                    getSpatialMatch(a, ret).matchingChangedNodes.add(nd);
+                for (MatchableAlert a : unfilteredAlerts) {
+                    getSpatialMatch(a, ret).changedNodes.add(nd);
                 }
             }
             for (NodeDescriptor nd : changeset.newNodes.values()) {
                 Geometry geom = nd.getPoint().buffer(0.1);
                 for (Object o : bboxTree.query(geom.getEnvelopeInternal())) {
-                    RuntimeAlert a = (RuntimeAlert)o;
+                    MatchableAlert a = (MatchableAlert)o;
 //                    logger.info("newnode " + geom + " intersets box " + a.id +"  "  + a.polygonFilter);
-                    if (geom.intersects(a.polygonFilter)) {
+                    if (geom.intersects(a.getPolygon())) {
 //                        logger.info("INTERSECTS ");
-                        getSpatialMatch(a, ret).matchingNewNodes.add(nd);
+                        getSpatialMatch(a, ret).newNodes.add(nd);
                     }
                 }
-                for (RuntimeAlert a : unfilteredAlerts) {
-                    getSpatialMatch(a, ret).matchingNewNodes.add(nd);
+                for (MatchableAlert a : unfilteredAlerts) {
+                    getSpatialMatch(a, ret).newNodes.add(nd);
                 }
             }
             for (NodeDescriptor nd : changeset.deletedNodes.values()) {
                 Geometry geom = nd.getPoint().buffer(0.1);
                 for (Object o : bboxTree.query(geom.getEnvelopeInternal())) {
-                    RuntimeAlert a = (RuntimeAlert)o;
-                    if (geom.intersects(a.polygonFilter)) {
-                        getSpatialMatch(a, ret).matchingDeletedNodes.add(nd);
+                    MatchableAlert a = (MatchableAlert)o;
+                    if (geom.intersects(a.getPolygon())) {
+                        getSpatialMatch(a, ret).deletedNodes.add(nd);
                     }
                 }
-                for (RuntimeAlert a : unfilteredAlerts) {
-                    getSpatialMatch(a, ret).matchingDeletedNodes.add(nd);
+                for (MatchableAlert a : unfilteredAlerts) {
+                    getSpatialMatch(a, ret).deletedNodes.add(nd);
                 }
             }
 
@@ -115,39 +115,39 @@ public class SpatialFilter {
                 
                 
                 for (Object o : bboxTree.query(nd.after.line.getEnvelopeInternal())) {
-                    RuntimeAlert a = (RuntimeAlert)o;
+                    MatchableAlert a = (MatchableAlert)o;
 //                    logger.info("cway " + nd.after.line);
-                    if (nd.after.line.intersects(a.polygonFilter)) {
+                    if (nd.after.line.intersects(a.getPolygon())) {
 //                        logger.info("INTERSECTS " + nd.after.line);
-                        getSpatialMatch(a, ret).matchingChangedWays.add(nd);
+                        getSpatialMatch(a, ret).changedWays.add(nd);
                     }
                 }
-                for (RuntimeAlert a : unfilteredAlerts) {
-                    getSpatialMatch(a, ret).matchingChangedWays .add(nd);
+                for (MatchableAlert a : unfilteredAlerts) {
+                    getSpatialMatch(a, ret).changedWays .add(nd);
                 }
             }
             for (WayDescriptor nd : changeset.newWays.values()) {
                 if (nd.line == null) continue;
                 for (Object o : bboxTree.query(nd.line.getEnvelopeInternal())) {
-                    RuntimeAlert a = (RuntimeAlert)o;
-                    if (nd.line.intersects(a.polygonFilter)) {
-                        getSpatialMatch(a, ret).matchingNewWays.add(nd);
+                    MatchableAlert a = (MatchableAlert)o;
+                    if (nd.line.intersects(a.getPolygon())) {
+                        getSpatialMatch(a, ret).newWays.add(nd);
                     }
                 }
-                for (RuntimeAlert a : unfilteredAlerts) {
-                    getSpatialMatch(a, ret).matchingNewWays.add(nd);
+                for (MatchableAlert a : unfilteredAlerts) {
+                    getSpatialMatch(a, ret).newWays.add(nd);
                 }
             }
             for (WayDescriptor nd : changeset.deletedWays.values()) {
                 if (nd.line == null) continue;
                 for (Object o : bboxTree.query(nd.line.getEnvelopeInternal())) {
-                    RuntimeAlert a = (RuntimeAlert)o;
-                    if (nd.line.intersects(a.polygonFilter)) {
-                        getSpatialMatch(a, ret).matchingDeletedWays.add(nd);
+                    MatchableAlert a = (MatchableAlert)o;
+                    if (nd.line.intersects(a.getPolygon())) {
+                        getSpatialMatch(a, ret).deletedWays.add(nd);
                     }
                 }
-                for (RuntimeAlert a : unfilteredAlerts) {
-                    getSpatialMatch(a, ret).matchingDeletedWays.add(nd);
+                for (MatchableAlert a : unfilteredAlerts) {
+                    getSpatialMatch(a, ret).deletedWays.add(nd);
                 }
             }
 //            logger.info("Matched: " + ret.size() + " alerts match this changeset");

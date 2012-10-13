@@ -1,23 +1,16 @@
-package fr.openstreetmap.watch.criteria;
+package fr.openstreetmap.watch.matching;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertTrue;
 
 import java.util.Collection;
 
 import org.junit.Test;
 
-import com.google.common.io.LineReader;
 import com.vividsolutions.jts.geom.Coordinate;
-import com.vividsolutions.jts.geom.CoordinateSequence;
 import com.vividsolutions.jts.geom.Envelope;
 import com.vividsolutions.jts.geom.GeometryFactory;
-import com.vividsolutions.jts.geom.LinearRing;
 import com.vividsolutions.jts.geom.Polygon;
-import com.vividsolutions.jts.geom.PrecisionModel;
 
-import fr.openstreetmap.watch.matching.RuntimeAlert;
-import fr.openstreetmap.watch.matching.SpatialFilter;
-import fr.openstreetmap.watch.matching.SpatialMatch;
 import fr.openstreetmap.watch.model.ChangesetDescriptor;
 import fr.openstreetmap.watch.model.NodeDescriptor;
 
@@ -30,12 +23,11 @@ public class SpatialFilterTest {
         cd.newNodes.put(id, n1);
     }
     
-    public RuntimeAlert newBboxAlert(long id, double lat1, double lon1, double lat2, double lon2) {
+    public MatchableAlert newBboxAlert(long id, double lat1, double lon1, double lat2, double lon2) {
         GeometryFactory gf = new GeometryFactory();
-        RuntimeAlert a = new RuntimeAlert();
-        a.id = id;
+        MatchableAlert a = new MatchableAlert();
         Envelope e = new Envelope(new Coordinate(lon1, lat1), new Coordinate(lon2, lat2));
-        a.polygonFilter = (Polygon)gf.toGeometry(e);
+        a.polygon = (Polygon)gf.toGeometry(e);
         return a;
     }
     

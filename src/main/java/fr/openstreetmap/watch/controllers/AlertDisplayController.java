@@ -23,6 +23,9 @@ import fr.openstreetmap.watch.model.db.AlertMatch;
 import fr.openstreetmap.watch.model.db.User;
 import fr.openstreetmap.watch.util.SimpleXMLWriter;
 
+/**
+ * Gets matches data for an alert
+ */
 @Controller
 public class AlertDisplayController {
 	private DatabaseManager dbManager;

@@ -25,11 +25,17 @@ public class Alert {
     public void setUniqueKey(String uniqueKey) {
         this.uniqueKey = uniqueKey;
     }
-    public String getWatchedTags() {
-        return watchedTags;
+    public String getFilterClass() {
+		return filterClass;
+	}
+	public void setFilterClass(String filterClass) {
+		this.filterClass = filterClass;
+	}
+	public String getFilterParams() {
+        return filterParams;
     }
-    public void setWatchedTags(String watchedTags) {
-        this.watchedTags = watchedTags;
+    public void setFilterParams(String filterParams) {
+        this.filterParams = filterParams;
     }
     public String getPolygonWKT() {
         return polygonWKT;
@@ -84,7 +90,8 @@ public class Alert {
     private long creationTimestamp = System.currentTimeMillis();
     private String name;
     private String uniqueKey;
-    private String watchedTags;
+    private String filterClass;
+    private String filterParams;
     private String polygonWKT;
     private boolean publicAlert;
 }

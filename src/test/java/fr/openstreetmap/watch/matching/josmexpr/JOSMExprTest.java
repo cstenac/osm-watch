@@ -1,4 +1,4 @@
-package fr.openstreetmap.watch.criteria.josmexpr;
+package fr.openstreetmap.watch.matching.josmexpr;
 
 import static org.junit.Assert.*;
 

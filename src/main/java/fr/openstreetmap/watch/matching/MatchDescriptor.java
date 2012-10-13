@@ -8,13 +8,12 @@ import fr.openstreetmap.watch.model.WayDescriptor;
 
 /** Describes a final match (after spatial filtering) and why it matches */
 public class MatchDescriptor {
-	public MatchDescriptor(SpatialMatch sm) {
-		this.sm = sm;
+	public MatchDescriptor(SpatialMatch spatialMatch) {
+		this.spatialMatch = spatialMatch;
 	}
 	
 	public List<String> reasons = new ArrayList<String>();
-	
-	public SpatialMatch sm;
+	private SpatialMatch spatialMatch;
 	public boolean matches;
 	
 	public void addNode(NodeDescriptor node, String why) {
@@ -25,5 +24,10 @@ public class MatchDescriptor {
 		reasons.add(why + ": way <a href=\"http://www.openstreetmap.org/browse/way/" + way.id + "\">" + way.id + "</a>");
 		matches = true;
 	}
-
+	public SpatialMatch getSpatialMatch() {
+		return spatialMatch;
+	}
+	public void setSpatialMatch(SpatialMatch spatialMatch) {
+		this.spatialMatch = spatialMatch;
+	}
 }

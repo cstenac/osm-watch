@@ -67,7 +67,7 @@ public class DebugController {
         // Non transactional
         Alert ad = new Alert();
         ad.setPolygonWKT(polygons);
-        ad.setWatchedTags(tags);
+        ad.setFilterParams(tags);
         try {
             engine.addAlertToSpatialFilter(ad);
         } catch (Exception e) {

@@ -9,16 +9,21 @@ import fr.openstreetmap.watch.model.NodeDescriptor;
 import fr.openstreetmap.watch.model.WayChange;
 import fr.openstreetmap.watch.model.WayDescriptor;
 
+/**
+ * State of a changeset after filtering by the alert's polygon.
+ * 
+ * It contains the exact subset of changeset elements that matched the spatial filter.
+ */
 public class SpatialMatch {
-    public RuntimeAlert alert;
+    public MatchableAlert alert;
     public ChangesetDescriptor cd;
     
-    public List<NodeChange> matchingChangedNodes = new ArrayList<NodeChange>();
-    public List<NodeDescriptor> matchingNewNodes = new ArrayList<NodeDescriptor>();
-    public List<NodeDescriptor> matchingDeletedNodes = new ArrayList<NodeDescriptor>();
+    public List<NodeChange> changedNodes = new ArrayList<NodeChange>();
+    public List<NodeDescriptor> newNodes = new ArrayList<NodeDescriptor>();
+    public List<NodeDescriptor> deletedNodes = new ArrayList<NodeDescriptor>();
 
-    public List<WayChange> matchingChangedWays = new ArrayList<WayChange>();
-    public List<WayDescriptor> matchingNewWays = new ArrayList<WayDescriptor>();
-    public List<WayDescriptor> matchingDeletedWays = new ArrayList<WayDescriptor>();
-    public List<WayDescriptor> matchingWaysWithChangedNodes = new ArrayList<WayDescriptor>();
+    public List<WayChange> changedWays = new ArrayList<WayChange>();
+    public List<WayDescriptor> newWays = new ArrayList<WayDescriptor>();
+    public List<WayDescriptor> deletedWays = new ArrayList<WayDescriptor>();
+    public List<WayDescriptor> waysWithChangedNodes = new ArrayList<WayDescriptor>();
 }
