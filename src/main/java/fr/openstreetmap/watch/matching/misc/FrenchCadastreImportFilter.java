@@ -24,7 +24,8 @@ public class FrenchCadastreImportFilter extends Filter {
 			if (wd.hasTag("building")) {
 				nbBuildings++;
 				String source = wd.getSourceTag();
-				if (source != null && source.contains("cadastre-dgi")) {
+				logger.info("Source " + source);
+				if (source != null && (source.contains("cadastre-dgi") || source.contains("Cadastre. Mise "))){
 					nbCadastreBuildings++;
 				}
 			}
