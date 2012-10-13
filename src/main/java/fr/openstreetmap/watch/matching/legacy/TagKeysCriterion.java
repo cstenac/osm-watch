@@ -1,5 +1,6 @@
 package fr.openstreetmap.watch.matching.legacy;
 
+import java.util.HashSet;
 import java.util.Set;
 
 import fr.openstreetmap.watch.matching.Filter;
@@ -15,8 +16,10 @@ import fr.openstreetmap.watch.model.WayDescriptor;
  */
 public class TagKeysCriterion extends Filter {
 	Set<String> watchedKeys;
-	public TagKeysCriterion(Set<String> watchedKeys) {
-		this.watchedKeys = watchedKeys;
+	public TagKeysCriterion(String watchedKeys) {
+		Set<String> set = new HashSet<String>();
+		for (String s : watchedKeys.split(",")) set.add(s);
+		this.watchedKeys = set;
 	}
 	@Override
 	public MatchDescriptor matches(SpatialMatch sm) {
@@ -55,8 +58,8 @@ public class TagKeysCriterion extends Filter {
 				}
 			}
 		}
-		
-		
+
+
 		for (WayDescriptor n : sm.newWays) {
 			if (n.tags != null) {
 				for (String k : n.tags.keySet()) {

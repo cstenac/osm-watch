@@ -15,40 +15,52 @@ import fr.openstreetmap.watch.model.db.Alert;
 
 @Service
 public class DatabaseManager {
-    EntityManager em;
+    EntityManagerFactory emf;
+    ThreadLocal<EntityManager> emtl = new ThreadLocal<EntityManager>();
     
     @PostConstruct
     public void init() {
-        EntityManagerFactory emf = Persistence.createEntityManagerFactory("PU");
-        em = emf.createEntityManager();
+        emf = Persistence.createEntityManagerFactory("PU");
     }
     
     public void begin() {
-    	em.getTransaction().begin();
+    	logger.info("Begin on EM" + getEM());
+    	getEM().getTransaction().begin();
     }
     public void commit() {
-    	em.getTransaction().commit();
+    	logger.info("Commit on EM" + getEM());
+    	getEM().getTransaction().commit();
+    	getEM().close();
+    	emtl.remove();
     }
     public void rollback() {
-    	em.getTransaction().rollback();
+    	logger.info("Rollback on EM" + getEM());
+
+    	getEM().getTransaction().rollback();
+    	getEM().close();
+    	emtl.remove();
     }
     
     public void addAlert(Alert ad) {
-        em.persist(ad);
+        getEM().persist(ad);
     }
     
     public EntityManager getEM() {
-        return em;
+    	if (emtl.get() == null) {
+    		logger.info("Create an EM !");
+    		emtl.set(emf.createEntityManager());
+    	}
+        return emtl.get();
     }
     
     @SuppressWarnings("unchecked")
 	public List<Alert> getAlerts() {
-        Query q = em.createQuery ("SELECT x FROM Alert x");
+        Query q = getEM().createQuery ("SELECT x FROM Alert x");
         return (List<Alert>) q.getResultList ();
     }
     
     public Alert getAlertByKey(String uniqueKey) {
-        Query q = em.createQuery("SELECT x FROM Alert x where uniqueKey = ?1");
+        Query q = getEM().createQuery("SELECT x FROM Alert x where uniqueKey = ?1");
         q.setParameter(1, uniqueKey);
         @SuppressWarnings("unchecked")
 		List<Alert> aa = q.getResultList();
@@ -59,13 +71,15 @@ public class DatabaseManager {
     }
     
     public void deleteAlert(String uniqueKey) {
-        Query q = em.createQuery ("SELECT x FROM Alert x WHERE x.uniqueKey = ?1");
+    	logger.info("Delete on EM" + getEM());
+
+        Query q = getEM().createQuery ("SELECT x FROM Alert x WHERE x.uniqueKey = ?1");
         q.setParameter (1, uniqueKey);
         @SuppressWarnings("unchecked")
 		List<Alert> results = (List<Alert>) q.getResultList ();
         logger.info("Removing alert " + uniqueKey +" -> " + results.size() + " matches");
         for (Alert ar : results) {
-            em.remove(ar);
+        	getEM().remove(ar);
         }
     }
     

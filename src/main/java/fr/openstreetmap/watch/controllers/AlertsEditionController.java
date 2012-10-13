@@ -57,7 +57,9 @@ public class AlertsEditionController {
                     resp.sendError(403, "Not authenticated");
                     return;
                 }
-                la.addAll(ud.getAlerts());
+                if (ud.getAlerts() != null) {
+                	la.addAll(ud.getAlerts());
+                }
                 logger.info("Listing private alerts, have " + la.size());
             }
 
@@ -72,10 +74,13 @@ public class AlertsEditionController {
             JSONWriter wr = new JSONWriter(resp.getWriter());
             wr.object().key("alerts").array();
 
+            logger.info("List" + dbManager.getEM());
+
             for (Alert ad : la) {
                 wr.object();
                 if (ad.getPolygonWKT() != null) wr.key("polygon").value(ad.getPolygonWKT());
-                if (ad.getFilterParams() != null) wr.key("tags").value(ad.getFilterParams());
+                if (ad.getFilterClass() != null) wr.key("filterClass").value(ad.getFilterClass());
+                if (ad.getFilterParams() != null) wr.key("filterParams").value(ad.getFilterParams());
                 wr.key("creation_timestamp").value(ad.getCreationTimestamp());
                 wr.key("name").value(ad.getName());
                 wr.key("id").value(ad.getId());
@@ -151,8 +156,10 @@ public class AlertsEditionController {
     }
 
     @RequestMapping(value="/api/new_alert")
-    public synchronized void newAlert(@RequestParam("tags") String tags, 
-            @RequestParam("wkt") String wkt,
+    public synchronized void newAlert(
+    		@RequestParam(value="filterClass", required=false) String filterClass,
+    		@RequestParam(value="filterParams", required=false) String filterParams, 
+            @RequestParam(value="wkt", required=false) String wkt,
             @RequestParam("name") String name,
             HttpServletRequest req, HttpServletResponse resp) throws IOException {
         logger.info("Creating alert");
@@ -169,9 +176,8 @@ public class AlertsEditionController {
             if (wkt != null && wkt.length() > 0 ) {
                 ad.setPolygonWKT(wkt);
             }
-            if (tags != null && tags.length() > 0) {
-                ad.setFilterParams(tags);
-            }
+            ad.setFilterParams(filterParams);
+            ad.setFilterClass(filterClass);
             ad.setName(name);
             ad.setUniqueKey(SecretKeyGenerator.generate());
 
@@ -180,12 +186,9 @@ public class AlertsEditionController {
                 new MatchableAlert(ad);
             } catch (Exception e) {
                 logger.error("Failed to create alert, can't instantiate it", e);
-                resp.setStatus(400);
-                try {
-                    new JSONWriter(resp.getWriter()).object().key("ok").value("0").key("error").value(e.getMessage()).endObject();
-                } catch (JSONException e1) {
-                    //
-                }
+                writeJSONNOK(resp, "Failed to instantiate alert: " + e.getMessage());
+                dbManager.rollback();
+                return;
             }
 
             dbManager.getEM().persist(ad);
