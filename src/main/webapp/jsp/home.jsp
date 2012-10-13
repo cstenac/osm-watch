@@ -65,6 +65,8 @@
                         <legend>Filter</legend>
                         <select id="filter_type">
                         	<option value="josm" selected="selected">JOSM</option>
+                        	<option value="first_time">New contributor</option>
+                        	<option value="cadastre">French Cadastre import</option>
                         	<option value="custom">Custom</option>
                         </select>
                         <div class="syntax_help" id="josm_syntax_help">

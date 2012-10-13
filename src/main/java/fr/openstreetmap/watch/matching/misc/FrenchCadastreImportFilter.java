@@ -37,6 +37,7 @@ public class FrenchCadastreImportFilter extends Filter {
 		
 		if (nbCadastreBuildings > 40) {
 			md.matches = true;
+			md.reasons.clear();
 			md.reasons.add("" + nbCadastreBuildings + " buildings with Cadastre source");
 		} else {
 			md.matches = false;

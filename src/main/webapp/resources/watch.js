@@ -91,6 +91,12 @@ function prettyFilter(filterClass, filterParams) {
 	if (filterClass == "fr.openstreetmap.watch.matching.josmexpr.JOSMExprFilter") {
 		return "JOSM (" + filterParams + ")";
 	}
+	if (filterClass == "fr.openstreetmap.watch.matching.misc.FirstTimeContributorFilter") {
+		return "New contributor";
+	}
+	if (filterClass == "fr.openstreetmap.watch.matching.misc.FrenchCadastreImportFilter") {
+		return "French Cadastre Import";
+	}
 	return filterClass + " (" + filterParams + ")";
 }
 
@@ -180,11 +186,14 @@ $(document).ready(function() {
 			$("#josm_syntax_help").show();
 			$("#josm_fields").show();
 			$("#custom_fields").hide();
-
 		} else if (filterType == "custom"){
 			$("#josm_syntax_help").hide();
 			$("#josm_fields").hide();
 			$("#custom_fields").show();
+		} else {
+			$("#josm_syntax_help").hide();
+			$("#josm_fields").hide();
+			$("#custom_fields").hide();
 		}
 	});
 
@@ -201,6 +210,10 @@ $(document).ready(function() {
 				filterClass = "fr.openstreetmap.watch.matching.josmexpr.JOSMExprFilter";
 				filterParams = $("#josm_params_input").val();
 			}
+		} else if (filterType == "cadastre") {
+			filterClass = "fr.openstreetmap.watch.matching.misc.FrenchCadastreImportFilter";
+		} else if (filterType == "first_time") {
+			filterClass = "fr.openstreetmap.watch.matching.misc.FirstTimeContributorFilter";
 		} else if (filterType == "custom") {
 			filterClass = $("#filter_class_input").val();
 			filterParams = $("#filter_params_input").val();
