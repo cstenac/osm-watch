@@ -84,7 +84,10 @@ public class AlertDisplayController {
 				wr.key("changeset").value(am.getChangesetId());
 				wr.key("matchDate").value(am.getMatchTimestamp());
 				wr.key("reason").value(am.getReason());
-				// TODO: bbox
+				wr.key("minX").value(am.getMinX());
+				wr.key("minY").value(am.getMinY());
+				wr.key("maxX").value(am.getMaxX());
+				wr.key("maxY").value(am.getMaxY());
 				
 				wr.endObject();
 			}

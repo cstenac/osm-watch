@@ -22,6 +22,7 @@ import fr.openstreetmap.watch.matching.SpatialMatch;
 import fr.openstreetmap.watch.model.ChangesetDescriptor;
 import fr.openstreetmap.watch.model.db.Alert;
 import fr.openstreetmap.watch.model.db.AlertMatch;
+import fr.openstreetmap.watch.model.db.Changeset;
 import fr.openstreetmap.watch.parsers.AugmentedDiffParser;
 import fr.openstreetmap.watch.parsers.AugmentedDiffV2Parser;
 import fr.openstreetmap.watch.parsers.DiffParser;
@@ -83,6 +84,16 @@ public class Engine {
 		dbManager.begin();
 		try {
 			for (ChangesetDescriptor changeset : slist) {
+				logger.info("Handling changeset " + changeset.id);
+				changeset.computeBBox();
+				changeset.computeUser();
+
+				if (dbManager.getEM().createQuery("Select x from Changeset x where x.id=" + changeset.id).getResultList().size() == 0) {
+					dbManager.getEM().persist(changeset.toDBModel());
+				} else {
+					logger.info("Need to update changeset ... TODO " + changeset.id);
+				}
+				
 //			    System.out.println("\n" + ChangesetDescriptorDumper.dump(changeset) );
 				Collection<SpatialMatch> spatialMatches = spatialFilter.getMatches(changeset);
 
@@ -118,6 +129,11 @@ public class Engine {
 		am.setAlert(md.getSpatialMatch().alert.desc);
 		am.setMatchTimestamp(System.currentTimeMillis());
 		am.setChangesetId(md.getSpatialMatch().cd.id);
+		am.setMinX(md.minX);
+		am.setMaxX(md.maxX);
+		am.setMinY(md.minY);
+		am.setMaxY(md.maxY);
+		
 		StringBuilder sb = new StringBuilder();
 		sb.append("<p>Matches because</p><ul>");
 		for (String reason: md.reasons) {

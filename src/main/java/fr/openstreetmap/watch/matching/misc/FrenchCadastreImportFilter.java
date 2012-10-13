@@ -27,6 +27,8 @@ public class FrenchCadastreImportFilter extends Filter {
 				logger.info("Source " + source);
 				if (source != null && (source.contains("cadastre-dgi") || source.contains("Cadastre. Mise "))){
 					nbCadastreBuildings++;
+					// We add manually the way to compute the truly matching bbox
+					md.addWay(wd, "Cadastre building");
 				}
 			}
 		}
@@ -36,6 +38,9 @@ public class FrenchCadastreImportFilter extends Filter {
 		if (nbCadastreBuildings > 40) {
 			md.matches = true;
 			md.reasons.add("" + nbCadastreBuildings + " buildings with Cadastre source");
+		} else {
+			md.matches = false;
+			md.reasons.clear();
 		}
 		return md;
 	}
