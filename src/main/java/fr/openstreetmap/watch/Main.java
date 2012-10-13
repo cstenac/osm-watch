@@ -1,7 +1,5 @@
 package fr.openstreetmap.watch;
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -11,8 +9,6 @@ import org.apache.commons.io.FileUtils;
 import org.apache.log4j.BasicConfigurator;
 
 import fr.openstreetmap.watch.model.ChangesetDescriptor;
-import fr.openstreetmap.watch.model.NodeChange;
-import fr.openstreetmap.watch.model.NodeDescriptor;
 import fr.openstreetmap.watch.parsers.AugmentedDiffParser;
 
 

@@ -23,7 +23,6 @@ import fr.openstreetmap.watch.matching.SpatialMatch;
 import fr.openstreetmap.watch.model.ChangesetDescriptor;
 import fr.openstreetmap.watch.model.db.Alert;
 import fr.openstreetmap.watch.model.db.AlertMatch;
-import fr.openstreetmap.watch.model.db.Changeset;
 import fr.openstreetmap.watch.parsers.AugmentedDiffParser;
 import fr.openstreetmap.watch.parsers.AugmentedDiffV2Parser;
 import fr.openstreetmap.watch.parsers.DiffParser;
@@ -131,7 +130,7 @@ public class Engine {
 	}
 
 	private void emitMatch(MatchDescriptor md) {
-		logger.info("Recordig match of alert " + md.getSpatialMatch().alert.desc.getId() + " by changeset " + md.getSpatialMatch().cd.id);
+		logger.info("Recording match of alert " + md.getSpatialMatch().alert.desc.getId() + " by changeset " + md.getSpatialMatch().cd.id);
 		AlertMatch am = new AlertMatch();
 		am.setAlert(md.getSpatialMatch().alert.desc);
 		am.setMatchTimestamp(System.currentTimeMillis());

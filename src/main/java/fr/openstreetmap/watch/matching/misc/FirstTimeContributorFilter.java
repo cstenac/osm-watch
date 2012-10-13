@@ -28,6 +28,7 @@ public class FirstTimeContributorFilter extends Filter {
 		q.setParameter(2, changeset.cd.id);
 		
 		if (q.getResultList().size() == 0) {
+			logger.info("No previous contribution from " + changeset.cd.user);
 			md.matches = true;
 			md.setMatchBboxAsChangesetBbox();
 			md.reasons.add("First contribution for " + changeset.cd.user);

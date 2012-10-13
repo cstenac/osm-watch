@@ -15,7 +15,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import fr.openstreetmap.watch.DatabaseManager;
 import fr.openstreetmap.watch.Engine;
 import fr.openstreetmap.watch.model.db.Alert;
-import fr.openstreetmap.watch.model.db.User;
 import fr.openstreetmap.watch.parsers.LastAugmentedDownloader;
 
 @Controller

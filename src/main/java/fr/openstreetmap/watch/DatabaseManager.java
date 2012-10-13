@@ -24,17 +24,17 @@ public class DatabaseManager {
     }
     
     public void begin() {
-    	logger.info("Begin on EM" + getEM());
+    	logger.debug("Begin on EM" + getEM());
     	getEM().getTransaction().begin();
     }
     public void commit() {
-    	logger.info("Commit on EM" + getEM());
+    	logger.debug("Commit on EM" + getEM());
     	getEM().getTransaction().commit();
     	getEM().close();
     	emtl.remove();
     }
     public void rollback() {
-    	logger.info("Rollback on EM" + getEM());
+    	logger.debug("Rollback on EM" + getEM());
 
     	getEM().getTransaction().rollback();
     	getEM().close();
@@ -47,7 +47,7 @@ public class DatabaseManager {
     
     public EntityManager getEM() {
     	if (emtl.get() == null) {
-    		logger.info("Create an EM !");
+    		logger.debug("Create an EM !");
     		emtl.set(emf.createEntityManager());
     	}
         return emtl.get();
@@ -71,13 +71,11 @@ public class DatabaseManager {
     }
     
     public void deleteAlert(String uniqueKey) {
-    	logger.info("Delete on EM" + getEM());
-
         Query q = getEM().createQuery ("SELECT x FROM Alert x WHERE x.uniqueKey = ?1");
         q.setParameter (1, uniqueKey);
         @SuppressWarnings("unchecked")
 		List<Alert> results = (List<Alert>) q.getResultList ();
-        logger.info("Removing alert " + uniqueKey +" -> " + results.size() + " matches");
+        logger.debug("Removing alert " + uniqueKey +" -> " + results.size() + " matches");
         for (Alert ar : results) {
         	getEM().remove(ar);
         }

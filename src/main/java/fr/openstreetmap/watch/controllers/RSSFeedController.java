@@ -96,7 +96,7 @@ public class RSSFeedController {
 				sxw.entity("title").text("Changeset " + am.getChangesetId()).endEntity();
 				sxw.entity("link").text("http://www.openstreetmap.org/browse/changeset/" + am.getChangesetId()).endEntity();
 				String desc = "Matched on " + new Date(am.getMatchTimestamp()) + am.getReason();
-				desc += "XX" +  String.format("<br /><a href=\"http://www.openstreetmap.org/?box=yes&bbox=%f,%f,%f,%f\">Bbox</a>",
+				desc +=  String.format("<br /><a href=\"http://www.openstreetmap.org/?box=yes&bbox=%f,%f,%f,%f\">Changeset Bbox</a>",
 						am.getMinX(), am.getMinY(), am.getMaxX(), am.getMaxY());
 				sxw.entity("description").text(desc).endEntity();
 				sxw.entity("pubDate").text(new Date(am.getMatchTimestamp()).toString()).endEntity();

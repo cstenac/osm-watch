@@ -24,7 +24,7 @@ public class FrenchCadastreImportFilter extends Filter {
 			if (wd.hasTag("building")) {
 				nbBuildings++;
 				String source = wd.getSourceTag();
-				logger.info("Source " + source);
+				logger.debug("Source " + source);
 				if (source != null && (source.contains("cadastre-dgi") || source.contains("Cadastre. Mise "))){
 					nbCadastreBuildings++;
 					// We add manually the way to compute the truly matching bbox
@@ -33,7 +33,7 @@ public class FrenchCadastreImportFilter extends Filter {
 			}
 		}
 		
-		logger.info("newWays=" + changeset.newWays.size() +  " buildings=" + nbBuildings +  " cadastre=" + nbCadastreBuildings);
+		logger.debug("newWays=" + changeset.newWays.size() +  " buildings=" + nbBuildings +  " cadastre=" + nbCadastreBuildings);
 		
 		if (nbCadastreBuildings > 40) {
 			md.matches = true;

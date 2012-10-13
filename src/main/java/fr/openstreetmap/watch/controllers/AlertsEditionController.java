@@ -11,7 +11,6 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.apache.log4j.Logger;
-import org.json.JSONException;
 import org.json.JSONWriter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -60,7 +59,7 @@ public class AlertsEditionController {
                 if (ud.getAlerts() != null) {
                 	la.addAll(ud.getAlerts());
                 }
-                logger.info("Listing private alerts, have " + la.size());
+                logger.debug("Listing private alerts, have " + la.size());
             }
 
             Collections.sort(la, new Comparator<Alert>() {

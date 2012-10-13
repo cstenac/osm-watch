@@ -3,7 +3,6 @@ package fr.openstreetmap.watch.controllers;
 import java.io.IOException;
 import java.net.HttpURLConnection;
 import java.net.URL;
-import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -65,7 +64,7 @@ public class AuthenticationHandler {
         }
         User u = l.get(0);
         u.getAlerts();
-        System.out.println("****** VERIFY AUTH, FOUND " + l.get(0) + " " + u.getAlerts());//.getAlerts().size());
+//        System.out.println("****** VERIFY AUTH, FOUND " + l.get(0) + " " + u.getAlerts());//.getAlerts().size());
         return l.get(0);
     }
 
@@ -82,7 +81,7 @@ public class AuthenticationHandler {
         //		String url = req.getHeader("referer") + "auth_callback";// req.getRequestURL().toString().replace("authenticate", "auth_callback");
         String url = ApplicationConfigurator.getBaseURL() + "/auth_callback";// req.getRequestURL().toString().replace("authenticate", "auth_callback");
 
-        System.out.println("********* WANT TO SEND TO "+ url);
+//        System.out.println("********* WANT TO SEND TO "+ url);
         String authUrl = provider.retrieveRequestToken(consumer, url);
         //req.getRequestURL().toString().replace("authenticate", ""));//callbackUrl);
 
@@ -126,7 +125,8 @@ public class AuthenticationHandler {
         q.setParameter(1, osmId);
 
         User user = null;
-        List<User> l = q.getResultList();
+        @SuppressWarnings("unchecked")
+		List<User> l = q.getResultList();
         if (l.size() > 0) {
             user = (User)l.get(0);
         } else {
