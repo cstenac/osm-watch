@@ -12,6 +12,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.apache.log4j.Logger;
+import org.json.JSONWriter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -49,14 +50,6 @@ public class AlertDisplayController {
 			}
 			Alert a = aa.get(0);
 
-			resp.setContentType("text/xml");
-			SimpleXMLWriter sxw = new SimpleXMLWriter(resp.getWriter());
-
-			sxw.entity("rss")
-			.attr("version", "2.0")
-			.entity("channel");
-
-			sxw.entity("title").text("OSM Watch alert: " + a.getName()).endEntity();
 			
 			List<AlertMatch> amList = new ArrayList<AlertMatch>();
 			amList.addAll(a.getAlertMatches());
@@ -75,26 +68,31 @@ public class AlertDisplayController {
                     }
                 }
 			});
+		
+			resp.setContentType("application/json");
+			JSONWriter wr = new JSONWriter(resp.getWriter());
+		
+			wr.object();
 			
+			wr.key("matches").array();
+			int matches = 0;
 			for (AlertMatch am : amList) {
-				sxw.entity("item");
-				sxw.entity("title").text("Changeset " + am.getChangesetId()).endEntity();
-				sxw.entity("link").text("http://www.openstreetmap.org/browse/changeset/" + am.getChangesetId()).endEntity();
-				sxw.entity("description").text("Matched on " + new Date(am.getMatchTimestamp()) + am.getReason()).endEntity();
-				sxw.entity("pubDate").text(new Date(am.getMatchTimestamp()).toString()).endEntity();
-				sxw.endEntity();
-				/*            	 <item>
-                 <title>Actualité N°1</title>
-                 <description>Ceci est ma première actualité</description>
-                 <pubDate>Sat, 07 Sep 2002 00:00:01 GMT</pubDate>
-                 <link>http://www.example.org/actu1</link>
-             </item>*/
+				if (matches++ == 100) break;
+				
+				wr.object();
+				
+				wr.key("changeset").value(am.getChangesetId());
+				wr.key("matchDate").value(am.getMatchTimestamp());
+				wr.key("reason").value(am.getReason());
+				// TODO: bbox
+				
+				wr.endObject();
 			}
-
-			sxw.endEntity().endEntity().close();
-
+			wr.endArray();
+			
+			wr.endObject();
 		} catch (Exception e) {
-			logger.error("Failed to get RSS", e);
+			logger.error("Failed to write Alert data", e);
 			resp.setStatus(500);
 			resp.setContentType("application/json");
 			resp.getWriter().write("{\"ok\": \"0\"}");
