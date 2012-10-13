@@ -97,10 +97,10 @@ public class Engine {
 					} else {
 						MatchDescriptor md = sm.alert.getFilter().matches(sm);
 						if (md.matches) {
-							logger.info("   Filter matches");
+							logger.info("   Filter matches(" + sm.alert.desc.getFilterClass() + " - " + sm.alert.desc.getFilterParams() + ")");
 							emitMatch(md);
 						} else {
-							logger.info("   Filter does not match");
+							logger.info("   Filter does not match (" + sm.alert.desc.getFilterClass() + " - " + sm.alert.desc.getFilterParams() + ")");
 						}
 					}
 				}

@@ -8,7 +8,7 @@ import com.vividsolutions.jts.io.WKTReader;
 
 import fr.openstreetmap.watch.matching.josmexpr.JOSMExprFilter;
 import fr.openstreetmap.watch.matching.josmexpr.SearchCompiler.ParseError;
-import fr.openstreetmap.watch.matching.legacy.TagKeysCriterion;
+import fr.openstreetmap.watch.matching.misc.LegacyTagKeysFilter;
 import fr.openstreetmap.watch.model.db.Alert;
 
 /**

@@ -65,6 +65,16 @@ public abstract class OsmPrimitive {
         return tags == null ? null : tags.get(key);
     }
     
+    
+    public boolean hasTag(String tag) {
+    	return get(tag) != null;
+    }
+    
+    public String getSourceTag() {
+    	return get("source");
+    }
+    
+    
     public Map<String, String> tags;
     public long timestamp;
     public long version;
