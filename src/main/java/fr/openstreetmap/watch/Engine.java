@@ -11,6 +11,7 @@ import javax.annotation.PostConstruct;
 
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.config.AutowireCapableBeanFactory;
 import org.springframework.stereotype.Service;
 
 import com.vividsolutions.jts.io.ParseException;
@@ -43,18 +44,24 @@ public class Engine {
 		/* Preload the filters */
 		for (Alert ad : dbManager.getAlerts()) {
 			try {
-				MatchableAlert a = new MatchableAlert(ad);
-				spatialFilter.addAlert(a);
+				addAlertToSpatialFilter(ad);
 			} catch (Exception e) {
 				logger.error("Failed to load alert " + ad.getId(), e);
 			}
 		}
 		dbManager.rollback();
 	}
+	
+	private @Autowired AutowireCapableBeanFactory beanFactory;
 
 	public void addAlertToSpatialFilter(Alert ad) throws Exception {
 		MatchableAlert a = new MatchableAlert(ad);
-//		dbManager.addAlert(ad);
+		
+		/* The filter can have some autowired dependencies, let's give them */
+		if (a.getFilter() != null) {
+			logger.info("Wiring");
+			beanFactory.autowireBean(a.getFilter());
+		}
 		spatialFilter.addAlert(a);
 	}
 

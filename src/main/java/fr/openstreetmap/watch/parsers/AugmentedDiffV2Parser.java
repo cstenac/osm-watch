@@ -209,6 +209,7 @@ public class AugmentedDiffV2Parser implements DiffParser{
         //nd.timestamp = Long.parseLong(e.getAttribute("id"));
         nd.changeset = Long.parseLong(e.getAttribute("changeset"));
         nd.uid = Long.parseLong(e.getAttribute("uid"));
+        nd.user = e.getAttribute("user");
 
         if (e.getChildNodes().getLength() > 0) {
             nd.tags = new HashMap<String, String>();
@@ -226,6 +227,7 @@ public class AugmentedDiffV2Parser implements DiffParser{
         //nd.timestamp = Long.parseLong(e.getAttribute("id"));
         nd.changeset = Long.parseLong(e.getAttribute("changeset"));
         nd.uid = Long.parseLong(e.getAttribute("uid"));
+        nd.user = e.getAttribute("user");
 
         if (e.getChildNodes().getLength() > 0) {
             nd.tags = new HashMap<String, String>();

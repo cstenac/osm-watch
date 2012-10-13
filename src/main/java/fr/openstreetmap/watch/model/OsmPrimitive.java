@@ -44,7 +44,7 @@ public abstract class OsmPrimitive {
     }
     
     public String getUser() {
-        return "" + uid;
+        return user;
     }
     
     public boolean hasKeys() {
@@ -81,5 +81,6 @@ public abstract class OsmPrimitive {
     public long id;
     public long changeset;
 
+    public String user;
     public long uid;
 }

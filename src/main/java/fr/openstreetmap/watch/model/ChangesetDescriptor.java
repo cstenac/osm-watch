@@ -12,6 +12,7 @@ public class ChangesetDescriptor {
 		Changeset out =new Changeset();
 		out.setId(id);
 		out.setUserName(user);
+		out.setUid(uid);
 		out.setMaxX(maxX);
 		out.setMinX(minX);
 		out.setMaxY(maxY);
@@ -29,33 +30,34 @@ public class ChangesetDescriptor {
 	
 	public void computeUser() {
 		for (NodeDescriptor nd : deletedNodes.values()) {
-			user = nd.getUser();
+			user = nd.getUser(); uid = nd.uid;
 			return;
 		}
 		for (NodeDescriptor nd : newNodes.values()) {
-			user = nd.getUser();
+			user = nd.getUser(); uid = nd.uid;
 			return;
 		}
 		for (NodeChange nc : changedNodes.values()) {
-			user = nc.after.getUser();
+			user = nc.after.getUser(); uid = nc.after.uid;
 			return;
 		}
 		for (WayDescriptor nd : deletedWays.values()) {
-			user = nd.getUser();
+			user = nd.getUser(); uid = nd.uid;
 			return;
 		}
 		for (WayDescriptor nd : newWays.values()) {
-			user = nd.getUser();
+			user = nd.getUser(); uid = nd.uid;
 			return;
 		}
 		for (WayChange nc : changedWays.values()) {
-			user = nc.after.getUser();
+			user = nc.after.getUser(); uid = nc.after.uid;
 			return;
 		}
 	}
 	
-	String user;
-	double minX = 180.0, minY = 90.0, maxX = -180.0, maxY = -90.0;
+	public String user;
+	public long uid;
+	public double minX = 180.0, minY = 90.0, maxX = -180.0, maxY = -90.0;
 	
 	public void computeBBox() {
 		for (NodeDescriptor nd : deletedNodes.values()) {
