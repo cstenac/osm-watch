@@ -5,7 +5,6 @@ import java.io.IOException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.apache.log4j.BasicConfigurator;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -25,8 +24,6 @@ public class AuthenticationStuffController {
 
     @RequestMapping(value="/authenticate")
     public void authenticate(HttpServletRequest req, HttpServletResponse resp) throws IOException{
-        BasicConfigurator.configure();
-
         dbManager.begin();
         if (AuthenticationHandler.verityAuth(req, dbManager) != null) {
             resp.sendError(400, "Already authenticated");
