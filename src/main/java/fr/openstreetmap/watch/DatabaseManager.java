@@ -20,7 +20,7 @@ public class DatabaseManager {
     
     @PostConstruct
     public void init() {
-        emf = Persistence.createEntityManagerFactory("PU");
+        emf = Persistence.createEntityManagerFactory("PU", ApplicationConfigurator.getPersistenceProperties());
     }
     
     public void begin() {

@@ -39,6 +39,8 @@
         <dependency org="geronimo-spec" name="geronimo-spec-jta" rev="1.0.1B-rc4"/>
         <dependency org="org.xerial" name="sqlite-jdbc" rev="3.7.2"/>
 
+        <dependency org="postgresql" name="postgresql" rev="9.1-901.jdbc4"/>
+
         <!-- OSM OAuth -->
         <dependency org="oauth.signpost" name="signpost-core" rev="1.2.1.2"/>
         <dependency org="commons-codec" name="commons-codec" rev="1.6" />
