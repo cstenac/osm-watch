@@ -58,7 +58,6 @@ public class Engine {
 		
 		/* The filter can have some autowired dependencies, let's give them */
 		if (a.getFilter() != null) {
-			logger.info("Wiring");
 			beanFactory.autowireBean(a.getFilter());
 		}
 		spatialFilter.addAlert(a);
