@@ -102,29 +102,6 @@ public class AlertsEditionController {
         }
 
     }
-
-    @RequestMapping(value="/api/delete_alert")
-    public synchronized void deleteAlert(@RequestParam("key") String key, 
-            HttpServletRequest req, HttpServletResponse resp) throws IOException {
-        logger.info("Removing alert " + key);
-
-        dbManager.begin();
-        try {
-            User ud = AuthenticationHandler.verityAuth(req, dbManager);
-            if (ud == null) {
-                resp.sendError(403, "Not authenticated");
-                return;
-            }
-            dbManager.deleteAlert(key);
-            dbManager.commit();
-            logger.info("Alert deletion successful");
-            writeJSONOK(resp);
-        } catch (IOException e) {
-            dbManager.rollback();
-            throw e;
-        }
-    }
-
     
     @RequestMapping(value="/api/set_alert_public")
     public synchronized void setAlertPublic(@RequestParam("key") String key, 
@@ -154,31 +131,45 @@ public class AlertsEditionController {
         }
     }
 
-    @RequestMapping(value="/api/new_alert")
+    @RequestMapping(value="/api/edit_alert")
     public synchronized void newAlert(
+    		@RequestParam(value="id", required=false) String id,
     		@RequestParam(value="filterClass", required=false) String filterClass,
     		@RequestParam(value="filterParams", required=false) String filterParams, 
             @RequestParam(value="wkt", required=false) String wkt,
             @RequestParam("name") String name,
             HttpServletRequest req, HttpServletResponse resp) throws IOException {
-        logger.info("Creating alert");
-
-        dbManager.begin();
+    	
+    	dbManager.begin();
         try {
             User ud = AuthenticationHandler.verityAuth(req, dbManager);
             if (ud == null) {
                 resp.sendError(403, "Not authenticated");
                 return;
             }
-            Alert ad = new Alert();
-            ad.setUser(ud);
+            
+            Alert ad = null;
+            if (id == null) {
+            	ad = new Alert();
+                ad.setUser(ud);
+                ad.setUniqueKey(SecretKeyGenerator.generate());
+            	logger.info("Creating new alert");
+            } else {
+            	ad = dbManager.getEM().find(Alert.class, Long.parseLong(id));
+            	logger.info("Editing alert " + ad.getId());
+            	if (ad.getUser().getOsmId() != ud.getOsmId()) {
+            		logger.error("Wrong user");
+            		resp.sendError(403, "Can't edit this alert");
+            		return;
+            	}
+            }
+            
             if (wkt != null && wkt.length() > 0 ) {
                 ad.setPolygonWKT(wkt);
             }
             ad.setFilterParams(filterParams);
             ad.setFilterClass(filterClass);
             ad.setName(name);
-            ad.setUniqueKey(SecretKeyGenerator.generate());
 
             /* Check syntax */
             try {
@@ -194,7 +185,12 @@ public class AlertsEditionController {
             dbManager.getEM().flush();
             dbManager.commit();
 
-            engine.addAlertToSpatialFilter(ad);
+            if (id == null) {
+            	engine.addAlertToSpatialFilter(ad);
+            } else {
+            	// Modified, we need to rebuild all
+            	engine.rebuildSpatialFilter();
+            }
             logger.info("Alert created successfully");
             writeJSONOK(resp);
         } catch (Exception e) {
@@ -203,7 +199,30 @@ public class AlertsEditionController {
             writeJSONNOK(resp, e.getMessage());
         }
     }
-    
+
+    @RequestMapping(value="/api/delete_alert")
+    public synchronized void deleteAlert(@RequestParam("key") String key, 
+            HttpServletRequest req, HttpServletResponse resp) throws IOException {
+        logger.info("Removing alert " + key);
+
+        dbManager.begin();
+        try {
+            User ud = AuthenticationHandler.verityAuth(req, dbManager);
+            if (ud == null) {
+                resp.sendError(403, "Not authenticated");
+                return;
+            }
+            dbManager.deleteAlert(key);
+            dbManager.commit();
+            engine.rebuildSpatialFilter();
+            logger.info("Alert deletion successful");
+            writeJSONOK(resp);
+        } catch (Exception e) {
+        	logger.error("Failed to delete alert", e);
+            dbManager.rollback();
+            writeJSONNOK(resp, e.getMessage());
+        }
+    }
     
     private void writeJSONOK(HttpServletResponse resp) throws IOException {
         resp.setContentType("application/json");

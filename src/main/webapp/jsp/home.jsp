@@ -102,6 +102,8 @@
                         	Params: <input style="width: 80%;" name="filter_params" id="filter_params_input" />
                         </div>
                     </fieldset>
+				
+					<input type="hidden" name="existing_id" id="existing_id_input" />
 
                     <fieldset>
                         <legend>Draw your search on the map</legend>

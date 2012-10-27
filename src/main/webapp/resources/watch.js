@@ -5,14 +5,16 @@ var map = undefined;
 var currentlyDrawnPolygon = null;
 
 function openNewAlertBox() {
+	$("#existing_id_input").val("");
+	$("#tags_input").val("");
+	$("#polygon_input").val("");
+	$("#name_input").val("My alert " + new Date().getTime());
+
 	$("#add_alert_box").lightbox_me({
 		centered:true,
 		onLoad: function() {
 
-			$("#tags_input").val("");
-			$("#polygon_input").val("");
-			$("#name_input").val("My alert " + new Date().getTime());
-
+			
 			var mapnikLayer = new L.TileLayer('http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {                                                                                                                    
 				maxZoom: 18,                                                                                                                                                                                       
 				attribution: 'OpenStreetMap'                                                                                                                                                                       
@@ -79,6 +81,42 @@ function deleteAlert(key) {
 		reloadAlertsList();
 	});
 }
+
+
+function fillFilterFieldsFromClassAndParams(filterClass, filterParams) {
+	if (filterClass == "fr.openstreetmap.watch.matching.misc.FrenchCadastreImportFilter") {
+		$("#filter_type option[value='cadastre']").attr('selected', 'selected');
+	} else if (filterClass == "fr.openstreetmap.watch.matching.misc.FirstTimeContributorFilter") {
+		$("#filter_type option[value='first_time']").attr('selected', 'selected');
+	} else if (filterClass == "fr.openstreetmap.watch.matching.josmexpr.JOSMExprFilter") {
+		$("#filter_type option[value='josm']").attr('selected', 'selected');
+		$("#josm_params_input").val(filterParams);
+	} else {
+		$("#filter_type option[value='custom']").attr('selected', 'selected');
+		$("#filter_class_input").val(filterClass);
+		$("#filter_params_input").val(filterParams);
+
+	}
+}
+
+function editAlert(key) {
+	for (var idx in currentAlertList) {
+		var a =currentAlertList[idx];
+		console.info("Checking key " + key + " vs " + a.key);
+		if (a.key == key) {
+			
+			
+			openNewAlertBox();
+			$("#existing_id_input").val(a.id);
+			fillFilterFieldsFromClassAndParams(a.filterClass, a.filterParams);
+			$("#filter_type").change();
+			$("#name_input").val(a.name);
+			$("#polygon_input").val(a.polygon);
+
+		}
+	}
+}
+
 function setAlertPublic(key, publicAlert) {
 	var url = "api/set_alert_public?key=" + key + "&public=" + publicAlert;
 	$.getJSON(url, function(json) {
@@ -100,6 +138,8 @@ function prettyFilter(filterClass, filterParams) {
 	return filterClass + " (" + filterParams + ")";
 }
 
+var currentAlertList = [];
+
 function reloadAlertsList() {
 	$("#alerts_list").html("<h3>Loading, please wait ...</h3>");
 	$("#public_alerts_list").html("<h3>Loading, please wait ...</h3>");
@@ -108,6 +148,8 @@ function reloadAlertsList() {
 		$("#alerts_list").html("<table class=\"alerts_list\" id=\"alerts_list_table\"></table>");
 
 		var aaData = [];
+		
+		currentAlertList = data.alerts;
 
 		for (var i in data.alerts) {
 			var rowData = [$.format.date(new Date(data.alerts[i].creation_timestamp), "yyyy/MM/dd"),
@@ -119,6 +161,7 @@ function reloadAlertsList() {
 			rowData.push(data.alerts[i].nb_matches);
 
 			var actions = "[<a href=\"#\" onclick=\"deleteAlert('"+ data.alerts[i].key + "')\">Delete</a>] ";
+			actions += "[<a href=\"#\" onclick=\"editAlert('"  + data.alerts[i].key + "')\">Edit</a>] ";
 			if (data.alerts[i].publicAlert) {
 				actions += "[<a href=\"#\" onclick=\"setAlertPublic('"+ data.alerts[i].key + "', false)\">Make private</a>]";
 			} else {
@@ -175,6 +218,7 @@ function reloadAlertsList() {
 	});
 }
 
+
 $(document).ready(function() {
 	$("#new_alert_button").click(function(e) {
 		openNewAlertBox();
@@ -220,15 +264,19 @@ $(document).ready(function() {
 		}
 
 
-		var url = "api/new_alert";
+		var url = "api/edit_alert";
 		var data = {"name" : name};
 		if (wkt.length > 0) {
 			data["wkt"] = wkt;
 		}
 		if (filterClass != null) data["filterClass"] = filterClass;
 		if (filterParams != null) data["filterParams"] = filterParams;
+		
+		if ($("#existing_id_input").val().length > 0) {
+			data["id"] = $("#existing_id_input").val();
+		}
 
-		console.log("Sending alert to " + url);
+		console.log("Sending alert to " + url + " -> " + data);
 		$.ajax({type: 'POST', url: url, dataType: "json",
 			data : data,
 			success: function(json) {

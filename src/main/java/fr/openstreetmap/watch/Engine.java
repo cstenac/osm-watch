@@ -53,7 +53,7 @@ public class Engine {
 	
 	private @Autowired AutowireCapableBeanFactory beanFactory;
 
-	public void addAlertToSpatialFilter(Alert ad) throws Exception {
+	public synchronized void addAlertToSpatialFilter(Alert ad) throws Exception {
 		MatchableAlert a = new MatchableAlert(ad);
 		
 		/* The filter can have some autowired dependencies, let's give them */
@@ -62,8 +62,22 @@ public class Engine {
 		}
 		spatialFilter.addAlert(a);
 	}
+	
+	public synchronized void rebuildSpatialFilter() throws Exception {
+		spatialFilter.clear();
+		dbManager.begin();
+		/* Preload the filters */
+		for (Alert ad : dbManager.getAlerts()) {
+			try {
+				addAlertToSpatialFilter(ad);
+			} catch (Exception e) {
+				logger.error("Failed to load alert " + ad.getId(), e);
+			}
+		}
+		dbManager.rollback();
+	}
 
-	public void handleAugmentedDiff(String contents, int version) throws Exception {
+	public synchronized void handleAugmentedDiff(String contents, int version) throws Exception {
 		logger.info("Handling augmented diff file " + contents.length() + " chars");
 		
 		DiffParser parser = null;

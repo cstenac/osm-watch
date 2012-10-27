@@ -40,6 +40,17 @@ public class SpatialFilter {
             rwLock.writeLock().unlock();
         }
     }
+    
+    public void clear() {
+    	rwLock.writeLock().lock();
+    	try {
+    		bboxTree = new Quadtree();
+    		unfilteredAlerts.clear();
+    	} finally {
+    		rwLock.writeLock().unlock();
+    	}
+    	
+    }
 
     private static SpatialMatch getSpatialMatch(MatchableAlert a, Map<Long, SpatialMatch> map) {
         if (map.containsKey(a.desc.getId())) {
