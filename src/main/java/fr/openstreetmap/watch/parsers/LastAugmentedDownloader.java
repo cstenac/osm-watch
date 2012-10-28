@@ -1,5 +1,6 @@
 package fr.openstreetmap.watch.parsers;
 
+import java.io.ByteArrayInputStream;
 import java.io.EOFException;
 import java.net.HttpURLConnection;
 import java.net.URL;
@@ -11,6 +12,8 @@ import java.util.zip.GZIPInputStream;
 
 import javax.persistence.Query;
 
+import org.apache.commons.httpclient.HttpClient;
+import org.apache.commons.httpclient.methods.GetMethod;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
@@ -30,135 +33,143 @@ import fr.openstreetmap.watch.util.XMLUtils;
 
 @Service
 public class LastAugmentedDownloader {
-    @Autowired private Engine engine;
-    @Autowired private DatabaseManager dbManager;
+	@Autowired private Engine engine;
+	@Autowired private DatabaseManager dbManager;
 
-    private String getHighestLink(String baseUrl) throws Exception {
-        URL u = new URL(baseUrl);
-        HttpURLConnection huc = (HttpURLConnection)u.openConnection();
+	HttpClient client = new HttpClient();
 
-        String xml = IOUtils.toString(huc.getInputStream());
-        String[] lines = StringUtils.split(xml, "\n");
-        /* Horrible :( */
-        xml = StringUtils.join(Arrays.copyOfRange(lines, 1, lines.length), "\n");
-        xml = xml.replace("]\">", "]\"/>");
-        xml = xml.replace("<hr>", "<hr/>");
-        xml = xml.replace("&nbsp;", " ");
+	private String getHighestLink(String baseUrl) throws Exception {
+		URL u = new URL(baseUrl);
+		HttpURLConnection huc = (HttpURLConnection)u.openConnection();
 
-        Document doc = XMLUtils.parse(xml);
-        long max = -1;
-        String maxHref = null;
-        for (Node n : XMLUtils.xpath(doc, "/html/body/table/tr/td/a")) {
-            Element e  = (Element)n;
-            String href = e.getAttribute("href");
-            String numHref = href.replace(".osc.gz", "").replace("/", "");
-            if (numHref.length() > 0 && StringUtils.isNumeric(numHref)) {
-                long longHref = Long.parseLong(numHref);
-                if (longHref > max) {
-                    max = longHref;
-                    maxHref = href;
-                }
-            } else {
-            }
-        }
-        return maxHref;
-    }
+		String xml = IOUtils.toString(huc.getInputStream());
+		String[] lines = StringUtils.split(xml, "\n");
+		/* Horrible :( */
+				xml = StringUtils.join(Arrays.copyOfRange(lines, 1, lines.length), "\n");
+				xml = xml.replace("]\">", "]\"/>");
+				xml = xml.replace("<hr>", "<hr/>");
+				xml = xml.replace("&nbsp;", " ");
 
-    Set<String> alreadyDownloaded = new HashSet<String>();
-    public  void run() throws Exception {
-        long currentId = getCurrentId();
+				Document doc = XMLUtils.parse(xml);
+				long max = -1;
+				String maxHref = null;
+				for (Node n : XMLUtils.xpath(doc, "/html/body/table/tr/td/a")) {
+					Element e  = (Element)n;
+					String href = e.getAttribute("href");
+					String numHref = href.replace(".osc.gz", "").replace("/", "");
+					if (numHref.length() > 0 && StringUtils.isNumeric(numHref)) {
+						long longHref = Long.parseLong(numHref);
+						if (longHref > max) {
+							max = longHref;
+							maxHref = href;
+						}
+					} else {
+					}
+				}
+				return maxHref;
+	}
 
-        dbManager.begin();
-        List<ApplicationState> asl = dbManager.getEM().createQuery("SELECT x FROM ApplicationState x").getResultList();
-        ApplicationState as  = null;
-        if (asl.size() == 0) {
-            logger.info("Initializing application state");
-            as = new ApplicationState();
-            as.setId(0);
-            as.setLastDownloadedId(currentId - 1);
-            dbManager.getEM().persist(as);
-            dbManager.commit();
-        } else {
-            as = asl.get(0);
-            dbManager.rollback();
-        }
+	Set<String> alreadyDownloaded = new HashSet<String>();
+	public  void run() throws Exception {
+		long currentId = getCurrentId();
 
-        for (long id = as.getLastDownloadedId() + 1; id <= currentId; id++) {
+		dbManager.begin();
+		List<ApplicationState> asl = dbManager.getEM().createQuery("SELECT x FROM ApplicationState x").getResultList();
+		ApplicationState as  = null;
+		if (asl.size() == 0) {
+			logger.info("Initializing application state");
+			as = new ApplicationState();
+			as.setId(0);
+			as.setLastDownloadedId(currentId - 1);
+			dbManager.getEM().persist(as);
+			dbManager.commit();
+		} else {
+			as = asl.get(0);
+			dbManager.rollback();
+		}
 
-            String url = getURLToDownload(id);
+		for (long id = as.getLastDownloadedId() + 1; id <= currentId; id++) {
 
-            logger.info("Downloading " + url);
-            long before = System.currentTimeMillis();
-            State.downloading = url;
-            URL u = new URL(url);
+			String url = getURLToDownload(id);
 
-            String xml = null;
-            for (int i = 0; i < 8; i++) {
-                try {
-                    HttpURLConnection huc = (HttpURLConnection)u.openConnection();
-                    xml = IOUtils.toString(new GZIPInputStream(huc.getInputStream()));
-                } catch (EOFException e) {
-                    logger.info("  File not yet ready, waiting ...");
-                    Thread.sleep(1000);
-                }
-            }
-            if (xml == null) {
-                logger.error("Failed to download " + url);
-                throw new Exception("Failed to download " + url);
-            }
-            State.downloading = null;
-            State.downloadedDiffs++;
-            State.totalDownloadSize += xml.length();
-            State.totalDownloadTime += (System.currentTimeMillis() - before);
-            
-            logger.info("Handling " + url);
-            State.processing = true;
-            before = System.currentTimeMillis();
-            try {
-            	engine.handleAugmentedDiff(xml, 2);
-            } finally {
-            	State.processing = false;
-            	State.totalProcessingTime += (System.currentTimeMillis() - before);
-            }
+			logger.info("Downloading " + url);
+			long before = System.currentTimeMillis();
+			State.downloading = url;
+			URL u = new URL(url);
 
-            dbManager.begin();
-            ApplicationState newAS = (ApplicationState) dbManager.getEM().createQuery("SELECT x FROM ApplicationState x").getResultList().get(0);
-            newAS.setLastDownloadedId(id);
-            dbManager.getEM().persist(newAS);
-            dbManager.commit();
-        }
+			String xml = null;
 
-    }
-    final String base = "http://overpass-api.de/augmented_diffs/";
+			try {
+				GetMethod gm = new GetMethod(u.toString());
+				client.executeMethod(gm);
+				int code = gm.getStatusCode();
+				logger.info("Status code is " + code);
+				byte[] data = IOUtils.toByteArray(gm.getResponseBodyAsStream());
+				logger.info("Got data size " + data.length);
+				State.totalDownloadSize += data.length;
+				xml = IOUtils.toString(new GZIPInputStream(new ByteArrayInputStream(data)));
+			} catch (EOFException e) {
+				logger.info("  File not yet ready, waiting ...");
+				Thread.sleep(1000);
+			}
 
-    public  long getCurrentId() throws Exception {
-        String maxMillion = getHighestLink(base).replaceAll("/$", "");
-        System.out.println(maxMillion);
-        String maxThousand = getHighestLink(base + "/" + maxMillion).replaceAll("/$", "");
-        String maxUnit = getHighestLink(base + "/" + maxMillion +"/" + maxThousand).replaceAll(".osc.gz", "");
-        return Integer.parseInt(maxMillion) * 1000000 + Integer.parseInt(maxThousand) * 1000 + Integer.parseInt(maxUnit);
-    }
+			if (xml == null) {
+				logger.error("Failed to download " + url);
+				throw new Exception("Failed to download " + url);
+			}
+			State.downloading = null;
+			State.downloadedDiffs++;
 
-    public  String getURLToDownload(long id) throws Exception {
-        return base + "/" + String.format("%03d", id/1000000) + "/" + 
-                String.format("%03d", (id % 1000000)/1000) + "/" + 
-                String.format("%03d", id % 1000) + ".osc.gz";
-    }
+			State.totalDownloadTime += (System.currentTimeMillis() - before);
 
-    public static void main(String[] args) throws Exception {
-        new ApplicationConfigurator().setApplicationContext(null);
+			logger.info("Handling " + url);
+			State.processing = true;
+			before = System.currentTimeMillis();
+			try {
+				engine.handleAugmentedDiff(xml, 2);
+			} finally {
+				State.processing = false;
+				State.totalProcessingTime += (System.currentTimeMillis() - before);
+			}
 
-        DatabaseManager dm = new DatabaseManager();
-        dm.init();
-        Engine e = new Engine();
-        e.setDatabaseManager(dm);
-        e.pc();
+			dbManager.begin();
+			ApplicationState newAS = (ApplicationState) dbManager.getEM().createQuery("SELECT x FROM ApplicationState x").getResultList().get(0);
+			newAS.setLastDownloadedId(id);
+			dbManager.getEM().persist(newAS);
+			dbManager.commit();
+		}
 
-        LastAugmentedDownloader lad = new LastAugmentedDownloader();
-        lad.engine = e;
-        lad.dbManager = dm;
-        lad.run();
-    }
+	}
+	final String base = "http://overpass-api.de/augmented_diffs/";
 
-    private static Logger logger = Logger.getLogger("osm.watch.download");
+	public  long getCurrentId() throws Exception {
+		String maxMillion = getHighestLink(base).replaceAll("/$", "");
+		System.out.println(maxMillion);
+		String maxThousand = getHighestLink(base + "/" + maxMillion).replaceAll("/$", "");
+		String maxUnit = getHighestLink(base + "/" + maxMillion +"/" + maxThousand).replaceAll(".osc.gz", "");
+		return Integer.parseInt(maxMillion) * 1000000 + Integer.parseInt(maxThousand) * 1000 + Integer.parseInt(maxUnit);
+	}
+
+	public  String getURLToDownload(long id) throws Exception {
+		return base + "/" + String.format("%03d", id/1000000) + "/" + 
+				String.format("%03d", (id % 1000000)/1000) + "/" + 
+				String.format("%03d", id % 1000) + ".osc.gz";
+	}
+
+	public static void main(String[] args) throws Exception {
+		new ApplicationConfigurator().setApplicationContext(null);
+
+		DatabaseManager dm = new DatabaseManager();
+		dm.init();
+		Engine e = new Engine();
+		e.setDatabaseManager(dm);
+		e.pc();
+
+		LastAugmentedDownloader lad = new LastAugmentedDownloader();
+		lad.engine = e;
+		lad.dbManager = dm;
+		lad.run();
+	}
+
+	private static Logger logger = Logger.getLogger("osm.watch.download");
 }
