@@ -104,8 +104,6 @@ function editAlert(key) {
 		var a =currentAlertList[idx];
 		console.info("Checking key " + key + " vs " + a.key);
 		if (a.key == key) {
-			
-			
 			openNewAlertBox();
 			$("#existing_id_input").val(a.id);
 			fillFilterFieldsFromClassAndParams(a.filterClass, a.filterParams);
@@ -136,6 +134,41 @@ function prettyFilter(filterClass, filterParams) {
 		return "French Cadastre Import";
 	}
 	return filterClass + " (" + filterParams + ")";
+}
+
+function createAutocomplete() {
+    $( "#admin_name_input" ).autocomplete({
+        appendTo : '#results',
+        delay : 100,
+        source: function(request, response) {
+            $.getJSON("http://localhost:8081/complete?q=" + request.term, function(data) {
+                after = new Date().getTime();
+                out = Array();
+                for (var match in data.matches) {
+                    complexMatch = data.matches[match];
+                    if (match < 15) out.push(complexMatch);
+                }
+                response(out);
+            });
+        },
+        minLength: 2,
+        open: function(){
+            $(this).autocomplete('widget').css('z-index', 1001);
+            return false;
+        },
+
+        select: function( event, ui ) {
+        	$("#polygon_input").val(ui.item.wkt);
+            return false;
+        }
+
+    }).data("autocomplete")._renderItem = function( ul, item ) {
+        return $( "<li></li>" )
+            .data( "item.autocomplete", item )
+            .append( "<a>" + item.name + 
+            		"<span class=\"debug\"> d=" + item.distance + " s=" + item.score + "</span></a>" )
+            .appendTo( ul );
+    };
 }
 
 var currentAlertList = [];
@@ -240,6 +273,8 @@ $(document).ready(function() {
 			$("#custom_fields").hide();
 		}
 	});
+	
+	createAutocomplete();
 
 	$("#add_alert_button").click(function(e) {
 		e.preventDefault();
