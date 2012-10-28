@@ -23,8 +23,8 @@ public class FirstTimeContributorFilter extends Filter {
 	public MatchDescriptor matches(SpatialMatch changeset) {
 		MatchDescriptor md = new MatchDescriptor(changeset);
 		
-		Query q = dbManager.getEM().createQuery("SELECT x FROM Changeset x where userName = ?1 AND id != ?2");
-		q.setParameter(1, changeset.cd.user);
+		Query q = dbManager.getEM().createQuery("SELECT x FROM Changeset x where uid = ?1 AND id != ?2");
+		q.setParameter(1, changeset.cd.uid);
 		q.setParameter(2, changeset.cd.id);
 		
 		if (q.getResultList().size() == 0) {
