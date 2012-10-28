@@ -1,0 +1,16 @@
+package fr.openstreetmap.watch;
+
+public class State {
+	public static String downloading;
+	public static int downloadedDiffs;
+	public static long totalDownloadSize;
+	public static long totalDownloadTime;
+	
+	public static boolean processing;
+	public static long totalProcessingTime;
+	public static long parsingProcessingTime;
+	
+	public static int processedChangesets;
+	public static int emittedMatches;
+	public static int matchedChangesets;
+}

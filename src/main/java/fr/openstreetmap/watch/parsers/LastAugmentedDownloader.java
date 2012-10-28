@@ -23,6 +23,7 @@ import org.w3c.dom.Node;
 import fr.openstreetmap.watch.ApplicationConfigurator;
 import fr.openstreetmap.watch.DatabaseManager;
 import fr.openstreetmap.watch.Engine;
+import fr.openstreetmap.watch.State;
 import fr.openstreetmap.watch.model.db.Alert;
 import fr.openstreetmap.watch.model.db.ApplicationState;
 import fr.openstreetmap.watch.util.XMLUtils;
@@ -87,6 +88,8 @@ public class LastAugmentedDownloader {
             String url = getURLToDownload(id);
 
             logger.info("Downloading " + url);
+            long before = System.currentTimeMillis();
+            State.downloading = url;
             URL u = new URL(url);
 
             String xml = null;
@@ -103,8 +106,20 @@ public class LastAugmentedDownloader {
                 logger.error("Failed to download " + url);
                 throw new Exception("Failed to download " + url);
             }
+            State.downloading = null;
+            State.downloadedDiffs++;
+            State.totalDownloadSize += xml.length();
+            State.totalDownloadTime += (System.currentTimeMillis() - before);
+            
             logger.info("Handling " + url);
-            engine.handleAugmentedDiff(xml, 2);
+            State.processing = true;
+            before = System.currentTimeMillis();
+            try {
+            	engine.handleAugmentedDiff(xml, 2);
+            } finally {
+            	State.processing = false;
+            	State.totalProcessingTime += (System.currentTimeMillis() - before);
+            }
 
             dbManager.begin();
             ApplicationState newAS = (ApplicationState) dbManager.getEM().createQuery("SELECT x FROM ApplicationState x").getResultList().get(0);
@@ -137,7 +152,7 @@ public class LastAugmentedDownloader {
         dm.init();
         Engine e = new Engine();
         e.setDatabaseManager(dm);
-        e.init();
+        e.pc();
 
         LastAugmentedDownloader lad = new LastAugmentedDownloader();
         lad.engine = e;

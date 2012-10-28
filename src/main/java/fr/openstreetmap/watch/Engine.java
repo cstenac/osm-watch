@@ -79,7 +79,7 @@ public class Engine {
 
 	public synchronized void handleAugmentedDiff(String contents, int version) throws Exception {
 		logger.info("Handling augmented diff file " + contents.length() + " chars");
-		
+		long before = System.currentTimeMillis();
 		DiffParser parser = null;
 		if (version == 1) {
 		    parser = new AugmentedDiffParser();
@@ -100,9 +100,13 @@ public class Engine {
 		});
 		logger.info("Parsed " + changesets.size() + " changesets");
 		
+		State.parsingProcessingTime += (System.currentTimeMillis() - before);
+		
 		dbManager.begin();
 		try {
 			for (ChangesetDescriptor changeset : slist) {
+				int matches = 0;
+				State.processedChangesets++;
 				logger.info("Handling changeset " + changeset.id);
 				changeset.computeBBox();
 				changeset.computeUser();
@@ -123,17 +127,20 @@ public class Engine {
 						MatchDescriptor md = new MatchDescriptor(sm);
 						md.reasons.add("No filter");
 						logger.info("   No filter -> matches");
+						matches++;
 						emitMatch(md);
 					} else {
 						MatchDescriptor md = sm.alert.getFilter().matches(sm);
 						if (md.matches) {
 							logger.info("   Filter matches(" + sm.alert.desc.getFilterClass() + " - " + sm.alert.desc.getFilterParams() + ")");
+							matches++;
 							emitMatch(md);
 						} else {
 							logger.info("   Filter does not match (" + sm.alert.desc.getFilterClass() + " - " + sm.alert.desc.getFilterParams() + ")");
 						}
 					}
 				}
+				if (matches > 0) State.matchedChangesets++;
 			} 
 			dbManager.commit();
 		} catch (Exception e) {
@@ -143,6 +150,7 @@ public class Engine {
 	}
 
 	private void emitMatch(MatchDescriptor md) {
+		State.emittedMatches ++;
 		logger.info("Recording match of alert " + md.getSpatialMatch().alert.desc.getId() + " by changeset " + md.getSpatialMatch().cd.id);
 		AlertMatch am = new AlertMatch();
 		am.setAlert(md.getSpatialMatch().alert.desc);
