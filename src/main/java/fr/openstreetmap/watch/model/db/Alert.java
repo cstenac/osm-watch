@@ -75,9 +75,21 @@ public class Alert {
     public void setPublicAlert(boolean publicAlert) {
         this.publicAlert = publicAlert;
     }
+    public boolean isEmailEnabled() {
+		return emailEnabled;
+	}
+	public void setEmailEnabled(boolean emailEnabled) {
+		this.emailEnabled = emailEnabled;
+	}
+	public long getLastEmailTimestamp() {
+		return lastEmailTimestamp;
+	}
+	public void setLastEmailTimestamp(long lastEmailTimestamp) {
+		this.lastEmailTimestamp = lastEmailTimestamp;
+	}
 
 
-    @Id
+	@Id
     @GeneratedValue(strategy=GenerationType.AUTO)
     private long id;
 
@@ -94,4 +106,6 @@ public class Alert {
     private String filterParams;
     private String polygonWKT;
     private boolean publicAlert;
+    private boolean emailEnabled;
+    private long lastEmailTimestamp;
 }

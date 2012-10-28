@@ -85,6 +85,7 @@ public class AlertsEditionController {
                 wr.key("id").value(ad.getId());
                 wr.key("key").value(ad.getUniqueKey());
                 wr.key("publicAlert").value(ad.isPublicAlert());
+                wr.key("emailEnabled").value(ad.isEmailEnabled());
                 if (ad.getAlertMatches() != null) {
                     wr.key("nb_matches").value(ad.getAlertMatches().size());
                 } else {
@@ -121,6 +122,35 @@ public class AlertsEditionController {
                     throw new IOException("Wrong user, you can't edit this alert");
                 }
                 a.setPublicAlert(publicAlert);
+                dbManager.getEM().persist(a);
+            }
+            writeJSONOK(resp);
+            dbManager.commit();
+        } catch (IOException e) {
+            dbManager.rollback();
+            throw e;
+        }
+    }
+    
+    @RequestMapping(value="/api/set_alert_email")
+    public synchronized void setAlertEmail(@RequestParam("key") String key, 
+            HttpServletRequest req, HttpServletResponse resp,
+            @RequestParam(value="enabled")boolean enabled) throws IOException {
+
+        dbManager.begin();
+        try {
+            User ud = AuthenticationHandler.verityAuth(req, dbManager);
+            if (ud == null) {
+                resp.sendError(403, "Not authenticated");
+                return;
+            }
+            Alert a = dbManager.getAlertByKey(key);
+            if (a != null) {
+                if (a.getUser().getOsmId() != ud.getOsmId()) {
+                    throw new IOException("Wrong user, you can't edit this alert");
+                }
+                a.setEmailEnabled(enabled);
+                a.setLastEmailTimestamp(0);
                 dbManager.getEM().persist(a);
             }
             writeJSONOK(resp);

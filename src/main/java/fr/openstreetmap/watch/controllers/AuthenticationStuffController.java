@@ -77,6 +77,7 @@ public class AuthenticationStuffController {
                   return;
               }
               ud.setEmailAddress(email);
+              dbManager.getEM().persist(ud);
               dbManager.commit();
           } catch (Exception e) {
         	  dbManager.rollback();

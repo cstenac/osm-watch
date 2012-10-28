@@ -122,6 +122,13 @@ function setAlertPublic(key, publicAlert) {
 	});
 }
 
+function setAlertEmail(key, enabled) {
+	var url = "api/set_alert_email?key=" + key + "&enabled=" + enabled;
+	$.getJSON(url, function(json) {
+		reloadAlertsList();
+	});	
+}
+
 function prettyFilter(filterClass, filterParams) {
 	if (filterClass == null) return "No filter";
 	if (filterClass == "fr.openstreetmap.watch.matching.josmexpr.JOSMExprFilter") {
@@ -194,12 +201,18 @@ function reloadAlertsList() {
 			rowData.push(data.alerts[i].nb_matches);
 
 			var actions = "[<a href=\"#\" onclick=\"deleteAlert('"+ data.alerts[i].key + "')\">Delete</a>] ";
-			actions += "[<a href=\"#\" onclick=\"editAlert('"  + data.alerts[i].key + "')\">Edit</a>] ";
+			actions += "[<a href=\"#\" onclick=\"editAlert('"  + data.alerts[i].key + "')\">Edit</a>]<br />";
 			if (data.alerts[i].publicAlert) {
 				actions += "[<a href=\"#\" onclick=\"setAlertPublic('"+ data.alerts[i].key + "', false)\">Make private</a>]";
 			} else {
 				actions += "[<a href=\"#\" onclick=\"setAlertPublic('"+ data.alerts[i].key + "', true)\">Make public</a>]";
 			}
+			if (data.alerts[i].emailEnabled) {
+				actions += "[<a href=\"#\" onclick=\"setAlertEmail('"+ data.alerts[i].key + "', false)\">Disable emails</a>]";
+			} else {
+				actions += "[<a href=\"#\" onclick=\"setAlertEmail('"+ data.alerts[i].key + "', true)\">Enable emails</a>]";
+			}
+
 			rowData.push(actions);
 
 			aaData.push(rowData);
