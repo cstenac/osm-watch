@@ -37,7 +37,7 @@ public class Engine {
 	}
 
 	@PostConstruct
-	public void init() throws ParseException {
+	public void pc() throws ParseException {
 		logger.info("Loading spatial filter");
 		dbManager.begin();
 		/* Preload the filters */

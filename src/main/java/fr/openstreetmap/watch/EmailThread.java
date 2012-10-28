@@ -27,7 +27,7 @@ public class EmailThread {
 	Thread t;
 
 	@PostConstruct
-	public void init() {
+	public void pc() {
 		t = new BGThread();
 		t.start();
 	}
@@ -44,6 +44,10 @@ public class EmailThread {
 		String name = a.getUser().getScreenName();
 		String address = a.getUser().getEmailAddress();
 		logger.info("Sending mail to " + name + "<" + address + "> about " + a.getName());
+		if (address == null) {
+			logger.warn("Not sending it ! address not given !");
+			return;
+		}
 
 		Query q = dbManager.getEM().createQuery(
 				"SELECT am from AlertMatch am where am.alert=?1 AND am.matchTimestamp > ?2");
@@ -54,7 +58,7 @@ public class EmailThread {
 		logger.info("Have "  +matches.size() + " matches");
 
 		Properties props = System.getProperties();
-		props.put("mail.smtp.host", "smtp.sfr.fr");
+		props.put("mail.smtp.host", ApplicationConfigurator.getMandatoryProperty("mail.smtp.host"));
 		Session session = Session.getDefaultInstance(props, null);
 
 		Message msg = new MimeMessage(session);

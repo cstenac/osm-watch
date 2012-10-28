@@ -7,7 +7,6 @@
    http://www.springframework.org/schema/security http://www.springframework.org/schema/security/spring-security-3.0.xsd
    http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-3.0.xsd">
 
-            
   <bean id="viewResolver"
     class="org.springframework.web.servlet.view.InternalResourceViewResolver">
     <property name="viewClass"
@@ -15,10 +14,10 @@
     <property name="prefix" value="/jsp/" />
     <property name="suffix" value=".jsp" />
   </bean>
-  
 
-  <context:component-scan base-package="fr.openstreetmap" use-default-filters="false">
-    <context:include-filter expression="org.springframework.stereotype.Controller" type="annotation"/>
+
+  <context:component-scan base-package="fr.openstreetmap">
+    <context:exclude-filter expression="org.springframework.stereotype.Controller" type="annotation"/>
   </context:component-scan>
 
 </beans>

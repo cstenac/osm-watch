@@ -16,7 +16,7 @@ import org.springframework.stereotype.Service;
 public class ApplicationConfigurator implements ApplicationContextAware {
 	@Override
 	public void setApplicationContext(ApplicationContext arg0) throws BeansException {
-		System.out.println("******* Starting up ********");
+		System.out.println("******* Starting up ******** AC=" + arg0);
 		//        Logger.getRootLogger().removeAllAppenders();
 		//        BasicConfigurator.configure();
 	}
@@ -49,7 +49,7 @@ public class ApplicationConfigurator implements ApplicationContextAware {
 
 	public static synchronized String getMandatoryProperty(String key) {
 		parseConfig();
-		if (!config.containsKey("key")) throw new Error("Missing '" + key + "' key in config");
+		if (!config.containsKey(key)) throw new Error("Missing '" + key + "' key in config");
 		return config.getProperty(key);
 	}
 

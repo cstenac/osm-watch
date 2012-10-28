@@ -9,6 +9,7 @@ import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 
 import fr.openstreetmap.watch.ApplicationConfigurator;
 import fr.openstreetmap.watch.DatabaseManager;
@@ -68,7 +69,7 @@ public class AuthenticationStuffController {
     }
     
     @RequestMapping(value="/api/set_email_address")
-    public void setEmailAddress(String email, HttpServletRequest req, HttpServletResponse resp) throws IOException {
+    public void setEmailAddress(@RequestParam("email") String email, HttpServletRequest req, HttpServletResponse resp) throws IOException {
           dbManager.begin();
           try {
               User ud = AuthenticationHandler.verityAuth(req, dbManager);

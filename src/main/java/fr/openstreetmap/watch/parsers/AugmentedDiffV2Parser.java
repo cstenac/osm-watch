@@ -75,8 +75,6 @@ public class AugmentedDiffV2Parser implements DiffParser{
 		NodeList nl = (NodeList)expr.evaluate(doc, XPathConstants.NODESET);
 		for (Element e : new XMLUtils.ElementIterable(nl)) {
 			String type = e.getAttribute("type");
-			//            System.out.println("E TAGS= " + e.getAttribute("tags"));
-			//            System.out.println("E MEMBERS= " + e.getAttribute("members"));
 
 			if (type.equals("info")) {
 				Element child = getChildElement(e, 0);
@@ -131,11 +129,6 @@ public class AugmentedDiffV2Parser implements DiffParser{
 				Preconditions.checkArgument(childOld.getNodeName().equals("old"));
 				Element childNew = getChildElement(e, 1);
 				Preconditions.checkArgument(childNew.getNodeName().equals("new"));
-
-				System.out.println("childOld=" + childOld);
-				System.out.println("childNew=" + childNew);
-
-				System.out.println("CN Child1=" + ((Element)childNew.getChildNodes().item(1)).getAttribute("changeset"));
 
 				Element objInOld = getChildElement(childOld, 0);
 				Element objInNew = getChildElement(childNew, 0);
@@ -207,7 +200,6 @@ public class AugmentedDiffV2Parser implements DiffParser{
 		if (changesets.containsKey(id)) {
 			return changesets.get(id);
 		} else {
-			System.out.println("GET CHANGESET " + id);
 			ChangesetDescriptor cd = new ChangesetDescriptor();
 			cd.id = id;
 			changesets.put(id, cd);
@@ -232,7 +224,6 @@ public class AugmentedDiffV2Parser implements DiffParser{
 			getChangeset(nd.changeset).deletedWays.put(nd.id, nd);
 		}
 		for (WayChange nc : changedWays.values()) {
-			System.out.println("WC c=" + nc.changeset);
 			getChangeset(nc.changeset).changedWays.put(nc.id, nc);
 		}
 		for (WayDescriptor nd : newWays.values()) {
