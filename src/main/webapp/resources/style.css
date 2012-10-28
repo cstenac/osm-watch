@@ -8,6 +8,14 @@ body {
     padding-top:3em;
 }
 
+input#email_input {
+	font-size:1em;
+}
+
+#email_submit {
+	font-size:1em;
+}
+
 a {
 	text-decoration: none;
 	font-weight:bold;

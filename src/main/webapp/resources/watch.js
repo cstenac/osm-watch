@@ -275,6 +275,16 @@ $(document).ready(function() {
 	});
 	
 	createAutocomplete();
+	
+	$("#email_submit").click(function(e) {
+		e.preventDefault();
+		var email = $("#email_input").val();
+		if (email.length == 0) {
+			window.alert("email can't be empty");
+		} else {
+			$.getJSON("api/set_email_address?email=" + email);
+		}
+	});
 
 	$("#add_alert_button").click(function(e) {
 		e.preventDefault();

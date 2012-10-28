@@ -32,6 +32,7 @@
 
 
 <script type="text/javascript">
+/*
 jQuery(document).ready(function() {
   var hints = {
     "admin_name_input": "Enter an admin relation",
@@ -65,6 +66,7 @@ jQuery(document).ready(function() {
  
   });
 });
+*/
 </script>
 
 </head>
@@ -86,6 +88,10 @@ jQuery(document).ready(function() {
 			<div id="logged_in">
 				Logged in as
 				<c:out value="${ud.screenName}" />
+				<br />
+				E-mail address: <input type="text" id="email_input" value="${ud.emailAddress}" />
+				<input type="submit" id="email_submit" value="Update" style="font-size:1Em"/><br />
+				(required for email notifications)  
 			</div>
 
 			<h2>Your alerts</h2>

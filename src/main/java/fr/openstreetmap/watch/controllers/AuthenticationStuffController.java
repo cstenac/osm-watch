@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 
 import fr.openstreetmap.watch.ApplicationConfigurator;
 import fr.openstreetmap.watch.DatabaseManager;
+import fr.openstreetmap.watch.model.db.Alert;
 import fr.openstreetmap.watch.model.db.User;
 
 @Controller
@@ -64,6 +65,22 @@ public class AuthenticationStuffController {
             resp.sendError(401, "Failed to authenticate");
             dbManager.rollback();
         }
+    }
+    
+    @RequestMapping(value="/api/set_email_address")
+    public void setEmailAddress(String email, HttpServletRequest req, HttpServletResponse resp) throws IOException {
+          dbManager.begin();
+          try {
+              User ud = AuthenticationHandler.verityAuth(req, dbManager);
+              if (ud == null) {
+                  resp.sendError(403, "Not authenticated");
+                  return;
+              }
+              ud.setEmailAddress(email);
+              dbManager.commit();
+          } catch (Exception e) {
+        	  dbManager.rollback();
+          }
     }
 
     private static Logger logger = Logger.getLogger("osm.watch.controller");
