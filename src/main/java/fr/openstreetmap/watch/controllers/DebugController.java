@@ -11,6 +11,7 @@ import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 
 import fr.openstreetmap.watch.DatabaseManager;
 import fr.openstreetmap.watch.Engine;
@@ -37,7 +38,7 @@ public class DebugController {
     }
 
     @RequestMapping(value="/debug/send_augmented_diff")
-    public void newAlert(String file, HttpServletRequest req, HttpServletResponse resp) throws IOException {
+    public void newAlert(@RequestParam("file") String file, HttpServletRequest req, HttpServletResponse resp) throws IOException {
         // Non transactional
         
         String content = FileUtils.readFileToString(new File(file));
