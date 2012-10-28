@@ -148,7 +148,7 @@ function createAutocomplete() {
         appendTo : '#results',
         delay : 100,
         source: function(request, response) {
-            $.getJSON("http://localhost:8081/complete?q=" + request.term, function(data) {
+            $.getJSON("http://osm102.openstreetmap.fr/~zorglub/search/polygons?q=" + request.term, function(data) {
                 after = new Date().getTime();
                 out = Array();
                 for (var match in data.matches) {

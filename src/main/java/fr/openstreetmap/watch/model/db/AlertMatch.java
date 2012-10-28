@@ -20,6 +20,7 @@ public class AlertMatch {
     
     private long matchTimestamp;
     private long changesetId;
+    private String changesetUserName;
     
     private String reason;
     
@@ -98,5 +99,13 @@ public class AlertMatch {
 
 	public void setMaxY(double maxY) {
 		this.maxY = maxY;
+	}
+
+	public String getChangesetUserName() {
+		return changesetUserName;
+	}
+
+	public void setChangesetUserName(String changesetUserName) {
+		this.changesetUserName = changesetUserName;
 	}
 }

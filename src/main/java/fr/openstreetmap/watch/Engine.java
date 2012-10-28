@@ -156,6 +156,7 @@ public class Engine {
 		am.setAlert(md.getSpatialMatch().alert.desc);
 		am.setMatchTimestamp(System.currentTimeMillis());
 		am.setChangesetId(md.getSpatialMatch().cd.id);
+		am.setChangesetUserName(md.getSpatialMatch().cd.user);
 		am.setMinX(md.minX);
 		am.setMaxX(md.maxX);
 		am.setMinY(md.minY);
