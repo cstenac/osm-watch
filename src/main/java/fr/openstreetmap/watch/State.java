@@ -2,6 +2,9 @@ package fr.openstreetmap.watch;
 
 public class State {
 	public static String downloading;
+	public static long lastDiscoveredId;
+	public static long currentDownloadQueue;
+	
 	public static int downloadedDiffs;
 	public static long totalDownloadSize;
 	public static long totalDownloadTime;
