@@ -10,6 +10,7 @@ import org.apache.log4j.BasicConfigurator;
 
 import fr.openstreetmap.watch.model.ChangesetDescriptor;
 import fr.openstreetmap.watch.parsers.AugmentedDiffParser;
+import fr.openstreetmap.watch.parsers.AugmentedDiffV2Parser;
 
 
 public class Main {
@@ -17,7 +18,7 @@ public class Main {
         BasicConfigurator.configure();
         String s = FileUtils.readFileToString(new File("/tmp/000.osc"), "utf8");
         s = s.replace("&", "&amp;");
-        AugmentedDiffParser opf = new AugmentedDiffParser();
+        AugmentedDiffV2Parser opf = new AugmentedDiffV2Parser();
         opf.parse(s);
         
         /*
