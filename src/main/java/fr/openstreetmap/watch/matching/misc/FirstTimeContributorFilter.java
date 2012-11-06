@@ -23,17 +23,18 @@ public class FirstTimeContributorFilter extends Filter {
 	public MatchDescriptor matches(SpatialMatch changeset) {
 		MatchDescriptor md = new MatchDescriptor(changeset);
 		
-		Query q = dbManager.getEM().createQuery("SELECT x FROM Changeset x where uid = ?1 AND id != ?2");
+		Query q = dbManager.getEM().createQuery("SELECT COUNT(x) FROM Changeset x where uid = ?1 AND id != ?2");
 		q.setParameter(1, changeset.cd.uid);
 		q.setParameter(2, changeset.cd.id);
 		
-		if (q.getResultList().size() == 0) {
+		long count = (Long)q.getResultList().get(0);
+		if (count == 0) {
 			logger.info("No previous contribution from " + changeset.cd.user);
 			md.matches = true;
 			md.setMatchBboxAsChangesetBbox();
 			md.reasons.add("First contribution for " + changeset.cd.user);
 		} else {
-//			logger.info("Already seen " + q.getResultList().size() + " contribs from " + changeset.cd.user);
+			logger.info("Already seen " + count + " contribs from " + changeset.cd.user);
 		}
 		return md;
 	}
